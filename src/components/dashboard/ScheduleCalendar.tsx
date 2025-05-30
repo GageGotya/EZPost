@@ -9,14 +9,18 @@ interface ScheduleCalendarProps {
   posts: Post[];
 }
 
+interface DayContentProps {
+  day: Date;
+}
+
 export function ScheduleCalendar({ posts }: ScheduleCalendarProps) {
   const [date, setDate] = useState<Date>(new Date());
 
   // Group posts by date
   const postsByDate = posts.reduce((acc, post) => {
-    if (!post.scheduledFor) return acc;
+    if (!post.scheduled_for) return acc;
     
-    const dateStr = format(post.scheduledFor, 'yyyy-MM-dd');
+    const dateStr = format(new Date(post.scheduled_for), 'yyyy-MM-dd');
     if (!acc[dateStr]) {
       acc[dateStr] = [];
     }
@@ -32,7 +36,7 @@ export function ScheduleCalendar({ posts }: ScheduleCalendarProps) {
     return (
       <div className="w-full h-full min-h-[80px] p-1">
         <div className="text-sm font-medium">{format(day, 'd')}</div>
-        {dayPosts.map((post, index) => (
+        {dayPosts.map((post) => (
           <div
             key={post.id}
             className={`text-xs p-1 mt-1 rounded truncate ${
@@ -40,7 +44,7 @@ export function ScheduleCalendar({ posts }: ScheduleCalendarProps) {
             }`}
             title={post.content}
           >
-            {format(post.scheduledFor!, 'HH:mm')} - {getPlatformEmoji(post.platforms[0])}
+            {format(new Date(post.scheduled_for!), 'HH:mm')} - {getPlatformEmoji(post.platform)}
           </div>
         ))}
       </div>
@@ -52,10 +56,10 @@ export function ScheduleCalendar({ posts }: ScheduleCalendarProps) {
       <Calendar
         mode="single"
         selected={date}
-        onSelect={(newDate) => newDate && setDate(newDate)}
+        onSelect={(newDate: Date | undefined) => newDate && setDate(newDate)}
         className="rounded-md border"
         components={{
-          DayContent: ({ day }) => getDayContent(day),
+          DayContent: ({ day }: DayContentProps) => getDayContent(day),
         }}
       />
     </div>
