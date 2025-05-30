@@ -1,0 +1,78 @@
+import { OpenAI } from 'openai';
+import { LRUCache } from 'lru-cache';
+
+const contentCache = new LRUCache({
+  max: 500, // Store up to 500 items
+  ttl: 1000 * 60 * 60 * 24, // Cache for 24 hours
+});
+
+const openai = new OpenAI({
+  apiKey: process.env.OPENAI_API_KEY,
+});
+
+type GenerateContentParams = {
+  prompt: string;
+  platforms: string[];
+  tone?: string;
+  industry?: string;
+  brandVoice?: string;
+  brandKeywords?: string[];
+};
+
+export async function generateContent({
+  prompt,
+  platforms,
+  tone = 'professional',
+  industry = 'general',
+  brandVoice = 'professional',
+  brandKeywords = [],
+}: GenerateContentParams) {
+  // Create a cache key from the parameters
+  const cacheKey = JSON.stringify({
+    prompt,
+    platforms,
+    tone,
+    industry,
+    brandVoice,
+    brandKeywords,
+  });
+
+  // Check cache first
+  const cached = contentCache.get(cacheKey);
+  if (cached) {
+    return cached;
+  }
+
+  // If not in cache, generate new content
+  try {
+    const completion = await openai.chat.completions.create({
+      model: "gpt-3.5-turbo", // Using 3.5-turbo instead of GPT-4 to reduce costs
+      messages: [
+        {
+          role: "system",
+          content: `You are a social media content expert. Create content that is optimized for ${platforms.join(', ')}. 
+                   Tone: ${tone}
+                   Industry: ${industry}
+                   Brand Voice: ${brandVoice}
+                   Brand Keywords: ${brandKeywords.join(', ')}`
+        },
+        {
+          role: "user",
+          content: prompt
+        }
+      ],
+      temperature: 0.7,
+      max_tokens: 500, // Limit token usage
+    });
+
+    const content = completion.choices[0].message.content;
+    
+    // Cache the result
+    contentCache.set(cacheKey, content);
+    
+    return content;
+  } catch (error) {
+    console.error('OpenAI API error:', error);
+    throw new Error('Failed to generate content');
+  }
+} 
