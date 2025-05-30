@@ -11,8 +11,6 @@
     }
   ],
   "env": {
-    "NEXTAUTH_URL": "https://ezpost.net",
-    "NEXTAUTH_SECRET": "@nextauth_secret",
     "OPENAI_API_KEY": "@openai_api_key",
     "CRON_SECRET": "@cron_secret"
   }

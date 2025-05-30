@@ -1,45 +1,36 @@
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
-import { auth } from '@/lib/firebase'
 
 // Paths that require authentication
 const protectedPaths = [
   '/dashboard',
-  '/dashboard/content',
-  '/dashboard/schedule',
-  '/dashboard/analytics',
-  '/dashboard/credits',
-  '/dashboard/profile',
-  '/dashboard/settings',
+  '/settings',
+  '/profile',
+  '/analytics',
+  '/content',
+  '/schedule',
 ]
 
-// Paths that should redirect to dashboard if user is authenticated
-const authPaths = ['/login', '/signup']
+// Paths that are public
+const publicPaths = ['/', '/login', '/signup', '/pricing', '/features']
 
 export async function middleware(request: NextRequest) {
-  const user = auth.currentUser
   const path = request.nextUrl.pathname
 
-  // Check if the path requires authentication
-  const isProtectedPath = protectedPaths.some(
-    (protectedPath) => path.startsWith(protectedPath)
-  )
-
-  // Check if the path is an auth path (login/signup)
-  const isAuthPath = authPaths.some(
-    (authPath) => path === authPath
-  )
-
-  if (isProtectedPath && !user) {
-    // Redirect to login if trying to access protected path without authentication
-    const loginUrl = new URL('/login', request.url)
-    loginUrl.searchParams.set('redirect', path)
-    return NextResponse.redirect(loginUrl)
+  // Allow public paths
+  if (publicPaths.some(p => path.startsWith(p))) {
+    return NextResponse.next()
   }
 
-  if (isAuthPath && user) {
-    // Redirect to dashboard if trying to access auth paths while authenticated
-    return NextResponse.redirect(new URL('/dashboard', request.url))
+  // Check if path requires authentication
+  if (protectedPaths.some(p => path.startsWith(p))) {
+    const token = request.cookies.get('auth_token')
+    
+    if (!token) {
+      const url = new URL('/login', request.url)
+      url.searchParams.set('from', path)
+      return NextResponse.redirect(url)
+    }
   }
 
   const response = NextResponse.next()
@@ -88,6 +79,14 @@ export async function middleware(request: NextRequest) {
 
 export const config = {
   matcher: [
-    '/((?!api|_next/static|_next/image|favicon.ico).*)',
+    /*
+     * Match all request paths except for the ones starting with:
+     * - api (API routes)
+     * - _next/static (static files)
+     * - _next/image (image optimization files)
+     * - favicon.ico (favicon file)
+     * - public folder
+     */
+    '/((?!api|_next/static|_next/image|favicon.ico|public).*)',
   ],
 } 
