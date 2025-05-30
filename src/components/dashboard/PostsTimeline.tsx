@@ -11,14 +11,16 @@ interface PostsTimelineProps {
 export function PostsTimeline({ posts }: PostsTimelineProps) {
   // Group posts by date
   const groupedPosts = posts.reduce((acc, post) => {
-    const date = post.scheduledFor || post.publishedAt;
-    if (!date) return acc;
+    const dateStr = post.scheduled_for || post.published_at;
+    if (!dateStr) return acc;
 
-    const dateStr = formatDate(date);
-    if (!acc[dateStr]) {
-      acc[dateStr] = [];
+    const date = new Date(dateStr);
+    const formattedDate = formatDate(date);
+    
+    if (!acc[formattedDate]) {
+      acc[formattedDate] = [];
     }
-    acc[dateStr].push(post);
+    acc[formattedDate].push(post);
     return acc;
   }, {} as Record<string, Post[]>);
 
@@ -62,18 +64,16 @@ export function PostsTimeline({ posts }: PostsTimelineProps) {
                         className="mt-2 text-sm text-gray-700"
                       >
                         <p className="font-medium">
-                          {formatTime(post.scheduledFor || post.publishedAt!)}
+                          {formatTime(new Date(post.scheduled_for || post.published_at!))}
                         </p>
                         <p className="mt-1">{post.content}</p>
                         <div className="mt-2 flex space-x-2">
-                          {post.platforms.map((platform) => (
-                            <span
-                              key={platform}
-                              className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-gray-100 text-gray-800"
-                            >
-                              {getPlatformEmoji(platform)} {platform}
-                            </span>
-                          ))}
+                          <span
+                            key={post.platform}
+                            className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-gray-100 text-gray-800"
+                          >
+                            {getPlatformEmoji(post.platform)} {post.platform}
+                          </span>
                         </div>
                       </div>
                     ))}
