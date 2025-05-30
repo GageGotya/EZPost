@@ -1,40 +1,65 @@
 import { useState, useEffect } from 'react';
-import { UserCredits } from '@/lib/types';
-import { userStorage } from '@/lib/userStorage';
-import { useAuth } from './useAuth';
+import { useAuth } from '@clerk/nextjs';
+import { supabase } from '@/lib/supabase/client';
+import type { Database } from '@/lib/supabase/types';
+
+type UserCredits = Database['public']['Tables']['user_credits']['Row'];
 
 export function useUserCredits() {
-  const { user } = useAuth();
-  const [credits, setCredits] = useState<UserCredits>({ available: 0, used: 0 });
+  const { userId } = useAuth();
+  const [credits, setCredits] = useState<UserCredits | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (user) {
-      const storedCredits = userStorage.getUserCredits(user.uid);
-      setCredits(storedCredits);
+    if (userId) {
+      fetchCredits();
+    }
+  }, [userId]);
+
+  const fetchCredits = async () => {
+    try {
+      const { data: userCredits, error } = await supabase
+        .from('user_credits')
+        .select('*')
+        .eq('user_id', userId)
+        .single();
+
+      if (error) {
+        throw error;
+      }
+
+      setCredits(userCredits);
+    } catch (error) {
+      console.error('Error fetching credits:', error);
+    } finally {
       setLoading(false);
     }
-  }, [user]);
-
-  const addCredits = (amount: number) => {
-    if (!user) return;
-    userStorage.addCredits(user.uid, amount);
-    setCredits(userStorage.getUserCredits(user.uid));
   };
 
-  const useCredit = (): boolean => {
-    if (!user) return false;
-    const success = userStorage.useCredit(user.uid);
-    if (success) {
-      setCredits(userStorage.getUserCredits(user.uid));
+  const updateCredits = async (newCredits: Partial<UserCredits>) => {
+    if (!userId) return;
+
+    try {
+      const { error } = await supabase
+        .from('user_credits')
+        .update(newCredits)
+        .eq('user_id', userId);
+
+      if (error) {
+        throw error;
+      }
+
+      await fetchCredits();
+    } catch (error) {
+      console.error('Error updating credits:', error);
+      throw error;
     }
-    return success;
   };
 
   return {
-    credits,
+    credits: credits || { available: 0, used: 0, user_id: userId!, id: '', created_at: '', updated_at: '' },
     loading,
-    addCredits,
-    useCredit,
+    updateCredits,
+    fetchCredits
   };
 } 
