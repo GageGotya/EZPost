@@ -2,15 +2,12 @@ import { useState } from 'react';
 import { Calendar } from '@/components/ui/calendar';
 import type { Database } from '@/lib/supabase/types';
 import { format } from 'date-fns';
+import type { DayProps } from 'react-day-picker';
 
 type Post = Database['public']['Tables']['social_posts']['Row'];
 
 interface ScheduleCalendarProps {
   posts: Post[];
-}
-
-interface DayContentProps {
-  day: Date;
 }
 
 export function ScheduleCalendar({ posts }: ScheduleCalendarProps) {
@@ -59,7 +56,7 @@ export function ScheduleCalendar({ posts }: ScheduleCalendarProps) {
         onSelect={(newDate: Date | undefined) => newDate && setDate(newDate)}
         className="rounded-md border"
         components={{
-          DayContent: ({ day }: DayContentProps) => getDayContent(day),
+          Day: ({ day }: DayProps) => getDayContent(day.date),
         }}
       />
     </div>
