@@ -1,6 +1,9 @@
 import OpenAI from 'openai';
 import { ContentRequest, GeneratedContent, Platform } from './types';
 
+// Simple in-memory cache for content
+const contentCache = new Map<string, string[] | null>();
+
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 });
@@ -77,7 +80,7 @@ function getSuggestedPostTime(platform: Platform): string {
 
 export async function generateHashtags(
   content: string,
-  platform: SocialPlatform,
+  platform: Platform,
   industry: string
 ): Promise<string[]> {
   const cacheKey = `hashtags:${content.slice(0, 100)}:${platform}:${industry}`;
