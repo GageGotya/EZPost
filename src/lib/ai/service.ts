@@ -1,5 +1,5 @@
 import OpenAI from 'openai';
-import Anthropic from 'anthropic';
+import Anthropic from '@anthropic-ai/sdk';
 import Replicate from 'replicate';
 import { ContentTone, PlatformType } from '../supabase/types';
 
