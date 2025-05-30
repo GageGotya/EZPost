@@ -1,81 +1,78 @@
-import { OpenAI } from 'openai';
-import { LRUCache } from 'lru-cache';
-import type { SocialPlatform } from './social';
-
-const contentCache = new LRUCache({
-  max: 500, // Store up to 500 items
-  ttl: 1000 * 60 * 60 * 24, // Cache for 24 hours
-});
+import OpenAI from 'openai';
+import { ContentRequest, GeneratedContent, Platform } from './types';
 
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 });
 
-type GenerateContentParams = {
-  prompt: string;
-  platforms: SocialPlatform[];
-  tone?: string;
-  industry?: string;
-  brandVoice?: string;
-  brandKeywords?: string[];
+const PLATFORM_SPECS = {
+  twitter: { maxLength: 280, style: 'concise and engaging' },
+  linkedin: { maxLength: 3000, style: 'professional and insightful' },
+  instagram: { maxLength: 2200, style: 'visual and trendy' },
+  facebook: { maxLength: 63206, style: 'conversational and informative' },
+  tiktok: { maxLength: 2200, style: 'trendy and entertaining' }
 };
 
-export async function generateContent({
-  prompt,
-  platforms,
-  tone = 'professional',
-  industry = 'general',
-  brandVoice = 'professional',
-  brandKeywords = [],
-}: GenerateContentParams): Promise<string> {
-  // Create a cache key from the parameters
-  const cacheKey = JSON.stringify({
-    prompt,
-    platforms,
-    tone,
-    industry,
-    brandVoice,
-    brandKeywords,
-  });
+export async function generateContent(request: ContentRequest): Promise<GeneratedContent[]> {
+  const { prompt, tone = 'professional', platforms, keywords = [] } = request;
 
-  // Check cache first
-  const cached = contentCache.get(cacheKey);
-  if (cached) {
-    return cached as string;
-  }
+  const results: GeneratedContent[] = [];
 
-  // If not in cache, generate new content
-  try {
+  for (const platform of platforms) {
+    const spec = PLATFORM_SPECS[platform];
+    
+    const systemPrompt = `You are a social media expert who creates ${spec.style} content. 
+    Create a post for ${platform} (max ${spec.maxLength} characters) that is ${tone} in tone.
+    Include relevant hashtags. The content should incorporate these keywords: ${keywords.join(', ')}.`;
+
     const completion = await openai.chat.completions.create({
-      model: "gpt-3.5-turbo", // Using 3.5-turbo instead of GPT-4 to reduce costs
+      model: "gpt-3.5-turbo",
       messages: [
-        {
-          role: "system",
-          content: `You are a social media content expert. Create content that is optimized for ${platforms.join(', ')}. 
-                   Tone: ${tone}
-                   Industry: ${industry}
-                   Brand Voice: ${brandVoice}
-                   Brand Keywords: ${brandKeywords.join(', ')}`
-        },
-        {
-          role: "user",
-          content: prompt
-        }
+        { role: "system", content: systemPrompt },
+        { role: "user", content: prompt }
       ],
       temperature: 0.7,
-      max_tokens: 500, // Limit token usage
     });
 
-    const content = completion.choices[0].message.content || '';
-    
-    // Cache the result
-    contentCache.set(cacheKey, content);
-    
-    return content;
-  } catch (error) {
-    console.error('OpenAI API error:', error);
-    throw new Error('Failed to generate content');
+    const content = completion.choices[0].message.content;
+    if (!content) continue;
+
+    // Extract hashtags
+    const hashtags = content.match(/#[\w]+/g) || [];
+    const cleanContent = content.replace(/(#[\w]+\s*)+$/, '').trim();
+
+    results.push({
+      platform,
+      content: cleanContent,
+      hashtags,
+      suggestedTime: getSuggestedPostTime(platform)
+    });
   }
+
+  return results;
+}
+
+function getSuggestedPostTime(platform: Platform): string {
+  // Get current date
+  const now = new Date();
+  
+  // Add 24 hours to current time
+  const tomorrow = new Date(now.getTime() + 24 * 60 * 60 * 1000);
+  
+  // Best posting times by platform (simplified)
+  const times = {
+    linkedin: '9:00',
+    twitter: '12:00',
+    facebook: '15:00',
+    instagram: '17:00',
+    tiktok: '19:00'
+  };
+  
+  // Set time to platform's best time
+  const [hours, minutes] = times[platform].split(':');
+  tomorrow.setHours(parseInt(hours), parseInt(minutes), 0, 0);
+  
+  return tomorrow.toISOString();
 }
 
 export async function generateHashtags(

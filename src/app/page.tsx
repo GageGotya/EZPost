@@ -1,132 +1,230 @@
-import React from 'react'
-import Image from 'next/image'
-import Link from 'next/link'
+import { LandingLayout } from '@/components/layout/LandingLayout';
+import { Button } from '@/components/ui/Button';
+import {
+  BoltIcon,
+  ChartBarIcon,
+  ClockIcon,
+  SparklesIcon,
+  UserGroupIcon,
+  WrenchScrewdriverIcon,
+} from '@heroicons/react/24/outline';
+
+const features = [
+  {
+    name: 'AI-Powered Content Generation',
+    description:
+      'Create engaging social media content in seconds with our advanced AI technology.',
+    icon: SparklesIcon,
+  },
+  {
+    name: 'Smart Scheduling',
+    description:
+      'Let AI determine the best times to post for maximum engagement across all platforms.',
+    icon: ClockIcon,
+  },
+  {
+    name: 'Multi-Platform Support',
+    description:
+      'Manage content for Twitter, LinkedIn, Instagram, Facebook, and TikTok from one place.',
+    icon: UserGroupIcon,
+  },
+  {
+    name: 'Performance Analytics',
+    description:
+      'Track engagement, reach, and growth with detailed analytics and insights.',
+    icon: ChartBarIcon,
+  },
+  {
+    name: 'Quick Setup',
+    description:
+      'Get started in minutes with our intuitive interface and guided onboarding.',
+    icon: BoltIcon,
+  },
+  {
+    name: 'Customizable Settings',
+    description:
+      'Tailor the content generation to match your brand voice and preferences.',
+    icon: WrenchScrewdriverIcon,
+  },
+];
+
+const testimonials = [
+  {
+    content:
+      "EZPost has transformed how we manage our social media. The AI-generated content is incredibly engaging and saves us hours every week.",
+    author: {
+      name: 'Sarah Chen',
+      role: 'Marketing Director',
+      company: 'TechStart Inc.',
+    },
+  },
+  {
+    content:
+      "The smart scheduling feature is a game-changer. Our engagement has increased by 150% since we started using EZPost.",
+    author: {
+      name: 'Michael Rodriguez',
+      role: 'Social Media Manager',
+      company: 'Growth Labs',
+    },
+  },
+  {
+    content:
+      "As a small business owner, EZPost has been invaluable. It's like having a full social media team at a fraction of the cost.",
+    author: {
+      name: 'Emily Thompson',
+      role: 'Founder',
+      company: 'The Modern Boutique',
+    },
+  },
+];
 
 export default function Home() {
   return (
-    <main className="min-h-screen">
-      {/* Hero Section */}
-      <section className="bg-gradient-to-r from-primary to-accent py-20">
-        <div className="container-custom">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
-            <div className="text-white">
-              <h1 className="text-4xl md:text-6xl font-bold mb-6">
-                Transform Your Social Media Presence with AI
-              </h1>
-              <p className="text-xl mb-8">
-                Automate content creation, scheduling, and analytics across TikTok, LinkedIn, Instagram, Twitter, and Facebook with our AI-powered platform.
-              </p>
-              <Link href="/signup" className="btn-primary text-lg">
-                Start Free Trial
-              </Link>
+    <LandingLayout>
+      {/* Hero section */}
+      <div className="relative isolate overflow-hidden bg-white">
+        <div className="mx-auto max-w-7xl px-6 pb-24 pt-10 sm:pb-32 lg:flex lg:px-8 lg:py-40">
+          <div className="mx-auto max-w-2xl lg:mx-0 lg:max-w-xl lg:flex-shrink-0 lg:pt-8">
+            <div className="mt-24 sm:mt-32 lg:mt-16">
+              <a href="/pricing" className="inline-flex space-x-6">
+                <span className="rounded-full bg-blue-600/10 px-3 py-1 text-sm font-semibold leading-6 text-blue-600 ring-1 ring-inset ring-blue-600/10">
+                  What's new
+                </span>
+                <span className="inline-flex items-center space-x-2 text-sm font-medium leading-6 text-gray-600">
+                  <span>Just shipped v1.0</span>
+                </span>
+              </a>
             </div>
-            <div className="relative h-[400px] rounded-lg overflow-hidden">
-              <Image
+            <h1 className="mt-10 text-4xl font-bold tracking-tight text-gray-900 sm:text-6xl">
+              AI-Powered Social Media Management Made Simple
+            </h1>
+            <p className="mt-6 text-lg leading-8 text-gray-600">
+              Create engaging content, schedule posts, and grow your social media presence with the power of AI.
+              Save time and boost engagement across all your platforms.
+            </p>
+            <div className="mt-10 flex items-center gap-x-6">
+              <Button onClick={() => window.location.href = '/signup'}>
+                Get started
+              </Button>
+              <Button
+                variant="outline"
+                onClick={() => window.location.href = '/features'}
+              >
+                Learn more
+              </Button>
+            </div>
+          </div>
+          <div className="mx-auto mt-16 flex max-w-2xl sm:mt-24 lg:ml-10 lg:mr-0 lg:mt-0 lg:max-w-none lg:flex-none xl:ml-32">
+            <div className="max-w-3xl flex-none sm:max-w-5xl lg:max-w-none">
+              <img
                 src="/dashboard-preview.png"
-                alt="EZPost Dashboard Preview"
-                fill
-                className="object-cover"
-                priority
+                alt="App screenshot"
+                width={2432}
+                height={1442}
+                className="w-[76rem] rounded-md bg-white/5 shadow-2xl ring-1 ring-white/10"
               />
             </div>
           </div>
         </div>
-      </section>
+      </div>
 
-      {/* Features Section */}
-      <section className="py-20">
-        <div className="container-custom">
-          <h2 className="text-3xl md:text-4xl font-bold text-center mb-12">
-            Why Choose EZPost?
-          </h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {features.map((feature, index) => (
-              <div key={index} className="p-6 rounded-lg bg-white shadow-lg">
-                <div className="text-primary text-2xl mb-4">{feature.icon}</div>
-                <h3 className="text-xl font-semibold mb-3">{feature.title}</h3>
-                <p className="text-gray-600">{feature.description}</p>
-              </div>
-            ))}
+      {/* Feature section */}
+      <div className="bg-white py-24 sm:py-32">
+        <div className="mx-auto max-w-7xl px-6 lg:px-8">
+          <div className="mx-auto max-w-2xl lg:text-center">
+            <h2 className="text-base font-semibold leading-7 text-blue-600">
+              Everything you need
+            </h2>
+            <p className="mt-2 text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">
+              Powerful features for modern social media management
+            </p>
+            <p className="mt-6 text-lg leading-8 text-gray-600">
+              Streamline your social media workflow with our comprehensive suite of tools and AI-powered features.
+            </p>
           </div>
-        </div>
-      </section>
-
-      {/* Pricing Section */}
-      <section className="py-20 bg-gray-50">
-        <div className="container-custom">
-          <h2 className="text-3xl md:text-4xl font-bold text-center mb-12">
-            Simple, Transparent Pricing
-          </h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {pricingPlans.map((plan, index) => (
-              <div key={index} className="p-8 rounded-lg bg-white shadow-lg">
-                <h3 className="text-2xl font-bold mb-4">{plan.name}</h3>
-                <div className="text-4xl font-bold mb-6">
-                  ${plan.price}<span className="text-lg text-gray-500">/mo</span>
+          <div className="mx-auto mt-16 max-w-2xl sm:mt-20 lg:mt-24 lg:max-w-none">
+            <dl className="grid max-w-xl grid-cols-1 gap-x-8 gap-y-16 lg:max-w-none lg:grid-cols-3">
+              {features.map((feature) => (
+                <div key={feature.name} className="flex flex-col">
+                  <dt className="flex items-center gap-x-3 text-base font-semibold leading-7 text-gray-900">
+                    <feature.icon
+                      className="h-5 w-5 flex-none text-blue-600"
+                      aria-hidden="true"
+                    />
+                    {feature.name}
+                  </dt>
+                  <dd className="mt-4 flex flex-auto flex-col text-base leading-7 text-gray-600">
+                    <p className="flex-auto">{feature.description}</p>
+                  </dd>
                 </div>
-                <ul className="space-y-3 mb-8">
-                  {plan.features.map((feature, i) => (
-                    <li key={i} className="flex items-center">
-                      <span className="text-green-500 mr-2">✓</span>
-                      {feature}
-                    </li>
-                  ))}
-                </ul>
-                <Link href="/signup" className="btn-primary block text-center">
-                  Get Started
-                </Link>
-              </div>
-            ))}
+              ))}
+            </dl>
           </div>
         </div>
-      </section>
-    </main>
-  )
-}
+      </div>
 
-const features = [
-  {
-    icon: '🤖',
-    title: 'AI-Powered Content Creation',
-    description: 'Our advanced AI creates engaging, platform-optimized content that resonates with your audience.',
-  },
-  {
-    icon: '📊',
-    title: 'Smart Analytics',
-    description: 'Track performance metrics and get AI-driven insights to improve your social media strategy.',
-  },
-  {
-    icon: '🔄',
-    title: 'Automated Scheduling',
-    description: 'Set it and forget it with our intelligent posting schedule that maximizes engagement.',
-  },
-]
+      {/* Testimonial section */}
+      <div className="bg-gray-50 py-24 sm:py-32">
+        <div className="mx-auto max-w-7xl px-6 lg:px-8">
+          <div className="mx-auto max-w-xl text-center">
+            <h2 className="text-lg font-semibold leading-8 tracking-tight text-blue-600">
+              Testimonials
+            </h2>
+            <p className="mt-2 text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">
+              Loved by businesses worldwide
+            </p>
+          </div>
+          <div className="mx-auto mt-16 flow-root max-w-2xl sm:mt-20 lg:mx-0 lg:max-w-none">
+            <div className="-mt-8 sm:-mx-4 sm:columns-2 sm:text-[0] lg:columns-3">
+              {testimonials.map((testimonial) => (
+                <div
+                  key={testimonial.author.name}
+                  className="pt-8 sm:inline-block sm:w-full sm:px-4"
+                >
+                  <figure className="rounded-2xl bg-white p-8 text-sm leading-6">
+                    <blockquote className="text-gray-900">
+                      <p>{`"${testimonial.content}"`}</p>
+                    </blockquote>
+                    <figcaption className="mt-6 flex items-center gap-x-4">
+                      <div>
+                        <div className="font-semibold text-gray-900">
+                          {testimonial.author.name}
+                        </div>
+                        <div className="text-gray-600">{`${testimonial.author.role}, ${testimonial.author.company}`}</div>
+                      </div>
+                    </figcaption>
+                  </figure>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
 
-const pricingPlans = [
-  {
-    name: 'Business',
-    price: 79,
-    features: [
-      '5 social media accounts',
-      '60 AI-generated posts/month',
-      'Advanced analytics',
-      'Priority email support',
-      'Custom branding',
-      'Content calendar',
-    ],
-  },
-  {
-    name: 'Enterprise',
-    price: 199,
-    features: [
-      'Unlimited social accounts',
-      'Unlimited AI-generated posts',
-      'Premium analytics & reporting',
-      '24/7 priority support',
-      'API access',
-      'Custom integrations',
-      'Dedicated account manager',
-      'Custom AI training',
-    ],
-  },
-] 
+      {/* CTA section */}
+      <div className="bg-white">
+        <div className="mx-auto max-w-7xl px-6 py-24 sm:py-32 lg:px-8">
+          <div className="mx-auto max-w-2xl text-center">
+            <h2 className="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">
+              Ready to transform your social media?
+            </h2>
+            <p className="mx-auto mt-6 max-w-xl text-lg leading-8 text-gray-600">
+              Join thousands of businesses using EZPost to create engaging content and grow their social media presence.
+            </p>
+            <div className="mt-10 flex items-center justify-center gap-x-6">
+              <Button onClick={() => window.location.href = '/signup'}>
+                Get started today
+              </Button>
+              <Button
+                variant="outline"
+                onClick={() => window.location.href = '/pricing'}
+              >
+                View pricing
+              </Button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </LandingLayout>
+  );
+} 
