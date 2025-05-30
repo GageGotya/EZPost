@@ -21,6 +21,9 @@ export function Navigation() {
   const router = useRouter();
   const { user, signOut } = useAuth();
 
+  const userInitial = user?.firstName?.[0] || user?.emailAddresses[0]?.emailAddress[0];
+  const userEmail = user?.emailAddresses[0]?.emailAddress;
+
   return (
     <Disclosure as="nav" className="bg-white shadow">
       {({ open }) => (
@@ -56,7 +59,7 @@ export function Navigation() {
                       <span className="sr-only">Open user menu</span>
                       <div className="h-8 w-8 rounded-full bg-blue-100 flex items-center justify-center">
                         <span className="text-blue-700 font-medium">
-                          {user.email?.[0].toUpperCase()}
+                          {userInitial?.toUpperCase()}
                         </span>
                       </div>
                     </Menu.Button>
@@ -152,12 +155,12 @@ export function Navigation() {
                 <div className="flex items-center px-4">
                   <div className="h-8 w-8 rounded-full bg-blue-100 flex items-center justify-center">
                     <span className="text-blue-700 font-medium">
-                      {user.email?.[0].toUpperCase()}
+                      {userInitial?.toUpperCase()}
                     </span>
                   </div>
                   <div className="ml-3">
                     <div className="text-sm font-medium text-gray-800">
-                      {user.email}
+                      {userEmail}
                     </div>
                   </div>
                 </div>
