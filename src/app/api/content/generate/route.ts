@@ -1,84 +1,70 @@
 import { NextResponse } from 'next/server';
-import { getServerSession } from 'next-auth';
-import { authOptions } from '@/lib/auth';
-import { rateLimit } from '@/lib/rate-limit';
-import { prisma } from '@/lib/prisma';
-import { generateContent } from '@/lib/openai';
-import { z } from 'zod';
+import { auth } from '@/lib/firebase-admin';
+import OpenAI from 'openai';
 
-const limiter = rateLimit({
-  interval: 60 * 1000, // 1 minute
-  uniqueTokenPerInterval: 500
+const openai = new OpenAI({
+  apiKey: process.env.OPENAI_API_KEY,
 });
 
-const generateSchema = z.object({
-  prompt: z.string().min(1).max(1000),
-  platforms: z.array(z.enum(['twitter', 'linkedin', 'instagram', 'facebook', 'tiktok'])),
-  tone: z.enum(['professional', 'casual', 'friendly', 'formal']).optional(),
-  contentType: z.enum(['text', 'image', 'video']).optional(),
-});
-
-export async function POST(req: Request) {
+export async function POST(request: Request) {
   try {
-    // Rate limiting
-    try {
-      await limiter.check(10, 'GENERATE_CONTENT'); // 10 requests per minute
-    } catch {
-      return NextResponse.json(
-        { error: 'Too many requests. Please try again later.' },
-        { status: 429 }
-      );
-    }
-
-    const session = await getServerSession(authOptions);
-    if (!session?.user) {
+    // Get the authorization token from the request headers
+    const authHeader = request.headers.get('Authorization');
+    if (!authHeader?.startsWith('Bearer ')) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const json = await req.json();
-    const result = generateSchema.safeParse(json);
+    const token = authHeader.split(' ')[1];
+    
+    // Verify the Firebase token
+    const decodedToken = await auth.verifyIdToken(token);
+    const userId = decodedToken.uid;
 
-    if (!result.success) {
+    // Get request body
+    const { prompt, platform, tone, length } = await request.json();
+
+    if (!prompt || !platform || !tone || !length) {
       return NextResponse.json(
-        { error: 'Invalid request data', details: result.error.format() },
+        { error: 'Missing required fields' },
         { status: 400 }
       );
     }
 
-    const { prompt, platforms, tone = 'professional', contentType = 'text' } = result.data;
-
-    // Get user preferences for context
-    const userPreferences = await prisma.userPreferences.findUnique({
-      where: { userId: session.user.id },
+    // Generate content using OpenAI
+    const completion = await openai.chat.completions.create({
+      model: "gpt-4",
+      messages: [
+        {
+          role: "system",
+          content: `You are a professional social media content creator. Create content for ${platform} that is ${tone} in tone and ${length} in length.`
+        },
+        {
+          role: "user",
+          content: prompt
+        }
+      ],
+      temperature: 0.7,
+      max_tokens: 500,
     });
 
-    // Generate content using our optimized client
-    const generatedContent = await generateContent({
-      prompt,
-      platforms,
-      tone,
-      industry: userPreferences?.industryType,
-      brandVoice: userPreferences?.brandVoice,
-      brandKeywords: userPreferences?.brandKeywords,
+    const generatedContent = completion.choices[0].message.content;
+
+    return NextResponse.json({
+      content: generatedContent,
+      platform,
+      userId
     });
 
-    // Store the generated content
-    const post = await prisma.post.create({
-      data: {
-        userId: session.user.id,
-        content: generatedContent || '',
-        platforms,
-        status: 'draft',
-      },
-    });
-
-    return NextResponse.json({ 
-      success: true, 
-      post,
-    });
-
-  } catch (error) {
+  } catch (error: any) {
     console.error('Content generation error:', error);
+    
+    if (error.code === 'auth/invalid-token') {
+      return NextResponse.json(
+        { error: 'Invalid authentication token' },
+        { status: 401 }
+      );
+    }
+
     return NextResponse.json(
       { error: 'Failed to generate content' },
       { status: 500 }
