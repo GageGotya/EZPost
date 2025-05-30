@@ -1,81 +1,46 @@
 import { NextResponse } from 'next/server';
-import { PrismaClient } from '@prisma/client';
-import bcrypt from 'bcryptjs';
-import { z } from 'zod';
+import { auth } from '@/lib/firebase';
+import { createUserWithEmailAndPassword } from 'firebase/auth';
 
-const prisma = new PrismaClient();
-
-const signupSchema = z.object({
-  name: z.string().min(1, 'Name is required'),
-  email: z.string().email('Invalid email address'),
-  password: z.string().min(8, 'Password must be at least 8 characters'),
-  plan: z.enum(['business', 'enterprise']),
-});
-
-export async function POST(req: Request) {
+export async function POST(request: Request) {
   try {
-    const body = await req.json();
-    const validatedData = signupSchema.parse(body);
+    const { email, password } = await request.json();
 
-    // Check if user already exists
-    const existingUser = await prisma.user.findUnique({
-      where: { email: validatedData.email },
-    });
-
-    if (existingUser) {
+    if (!email || !password) {
       return NextResponse.json(
-        { message: 'User already exists' },
+        { error: 'Email and password are required' },
         { status: 400 }
       );
     }
 
-    // Hash password
-    const hashedPassword = await bcrypt.hash(validatedData.password, 12);
+    // Create user in Firebase
+    const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+    const user = userCredential.user;
 
-    // Create user and subscription in a transaction
-    const user = await prisma.$transaction(async (tx) => {
-      // Create user
-      const newUser = await tx.user.create({
-        data: {
-          name: validatedData.name,
-          email: validatedData.email,
-          password: hashedPassword,
-        },
-      });
-
-      // Create subscription
-      await tx.subscription.create({
-        data: {
-          userId: newUser.id,
-          plan: validatedData.plan,
-          status: 'active', // Will be updated after payment
-        },
-      });
-
-      return newUser;
+    return NextResponse.json({
+      message: 'User created successfully',
+      userId: user.uid
     });
-
-    return NextResponse.json(
-      {
-        message: 'User created successfully',
-        user: {
-          id: user.id,
-          name: user.name,
-          email: user.email,
-        },
-      },
-      { status: 201 }
-    );
-  } catch (error) {
+  } catch (error: any) {
     console.error('Signup error:', error);
-    if (error instanceof z.ZodError) {
+    
+    // Handle Firebase specific errors
+    if (error.code === 'auth/email-already-in-use') {
       return NextResponse.json(
-        { message: 'Invalid input data', errors: error.errors },
+        { error: 'Email already in use' },
         { status: 400 }
       );
     }
+    
+    if (error.code === 'auth/weak-password') {
+      return NextResponse.json(
+        { error: 'Password is too weak' },
+        { status: 400 }
+      );
+    }
+
     return NextResponse.json(
-      { message: 'Internal server error' },
+      { error: 'Failed to create user' },
       { status: 500 }
     );
   }
