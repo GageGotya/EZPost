@@ -40,6 +40,9 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
     return null;
   }
 
+  const userInitial = user.firstName?.[0] || user.emailAddresses[0].emailAddress[0];
+  const userEmail = user.emailAddresses[0].emailAddress;
+
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Mobile sidebar */}
@@ -99,13 +102,13 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
                 <div className="flex-shrink-0">
                   <div className="h-8 w-8 rounded-full bg-blue-100 flex items-center justify-center">
                     <span className="text-blue-700 font-medium">
-                      {user.email?.[0].toUpperCase()}
+                      {userInitial.toUpperCase()}
                     </span>
                   </div>
                 </div>
                 <div className="ml-3">
                   <p className="text-sm font-medium text-gray-700 truncate">
-                    {user.email}
+                    {userEmail}
                   </p>
                 </div>
               </div>
@@ -154,13 +157,13 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
               <div className="flex-shrink-0">
                 <div className="h-8 w-8 rounded-full bg-blue-100 flex items-center justify-center">
                   <span className="text-blue-700 font-medium">
-                    {user.email?.[0].toUpperCase()}
+                    {userInitial.toUpperCase()}
                   </span>
                 </div>
               </div>
               <div className="ml-3">
                 <p className="text-sm font-medium text-gray-700 truncate">
-                  {user.email}
+                  {userEmail}
                 </p>
               </div>
             </div>
