@@ -12,11 +12,8 @@
   ],
   "env": {
     "NEXTAUTH_URL": "https://ezpost.net",
-    "DATABASE_URL": "@database_url",
     "NEXTAUTH_SECRET": "@nextauth_secret",
     "OPENAI_API_KEY": "@openai_api_key",
-    "CRON_SECRET": "@cron_secret",
-    "VERCEL_POSTGRES_PRISMA_URL": "postgres://default:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:5432/verceldb?pgbouncer=true&connect_timeout=15",
-    "VERCEL_POSTGRES_URL_NON_POOLING": "postgres://default:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:5432/verceldb"
+    "CRON_SECRET": "@cron_secret"
   }
 } 

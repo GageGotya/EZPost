@@ -2,72 +2,57 @@
 
 EZPost is a comprehensive social media management platform that leverages artificial intelligence to help small and medium-sized businesses automate and optimize their social media presence across multiple platforms.
 
-## Database Configuration
-
-This project uses Neon PostgreSQL for the database, configured with Prisma ORM. The database connection is managed through connection pooling for optimal performance in a serverless environment.
-
 ## Features
 
 - **AI-Powered Content Creation**: Automatically generate engaging, platform-optimized content for TikTok, LinkedIn, Instagram, Twitter, and Facebook
 - **Smart Analytics**: Track performance metrics and get AI-driven insights to improve your social media strategy
 - **Automated Scheduling**: Intelligent posting schedule that maximizes engagement
 - **Multi-Platform Support**: Manage all your social media accounts from a single dashboard
-- **Secure Authentication**: Enterprise-grade security for social media account access
+- **Secure Authentication**: Enterprise-grade security with Firebase Authentication
 - **Custom Branding**: Maintain consistent brand voice and style across all platforms
 
 ## Tech Stack
 
 - **Frontend**: Next.js 14, TypeScript, Tailwind CSS
-- **Backend**: Next.js API Routes
-- **Database**: PostgreSQL with Prisma ORM
+- **Authentication**: Firebase Auth
+- **Storage**: Local Storage + Firebase
 - **AI/ML**: OpenAI GPT-4
-- **Authentication**: NextAuth.js
-- **Hosting**: Vercel
+- **Payments**: Stripe
 - **Analytics**: Recharts
-- **Styling**: Tailwind CSS, clsx, tailwind-merge
+- **Styling**: Tailwind CSS, clsx
 
 ## Prerequisites
 
 - Node.js 18.x or later
 - npm 9.x or later
-- PostgreSQL database
-- Social media platform developer accounts
+- Firebase account
 - OpenAI API key
+- Stripe account
 
 ## Environment Variables
 
 Create a `.env.local` file in the root directory with the following variables:
 
 ```bash
-# Database
-DATABASE_URL="postgresql://username:password@localhost:5432/ezpost"
+# Firebase Configuration
+NEXT_PUBLIC_FIREBASE_API_KEY=your_firebase_api_key
+NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=your_firebase_auth_domain
+NEXT_PUBLIC_FIREBASE_PROJECT_ID=your_firebase_project_id
+NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET=your_firebase_storage_bucket
+NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=your_firebase_messaging_sender_id
+NEXT_PUBLIC_FIREBASE_APP_ID=your_firebase_app_id
 
-# NextAuth.js
-NEXTAUTH_URL="http://localhost:3000"
-NEXTAUTH_SECRET="your-nextauth-secret"
+# OpenAI Configuration
+OPENAI_API_KEY=your_openai_api_key
 
-# OpenAI
-OPENAI_API_KEY="your-openai-api-key"
+# Stripe Configuration
+NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=your_stripe_publishable_key
+STRIPE_SECRET_KEY=your_stripe_secret_key
+STRIPE_WEBHOOK_SECRET=your_stripe_webhook_secret
 
-# Social Media API Keys
-# Twitter
-TWITTER_CLIENT_ID="your-twitter-client-id"
-TWITTER_CLIENT_SECRET="your-twitter-client-secret"
-
-# LinkedIn
-LINKEDIN_CLIENT_ID="your-linkedin-client-id"
-LINKEDIN_CLIENT_SECRET="your-linkedin-client-secret"
-
-# Instagram/Facebook
-FACEBOOK_CLIENT_ID="your-facebook-client-id"
-FACEBOOK_CLIENT_SECRET="your-facebook-client-secret"
-
-# TikTok
-TIKTOK_CLIENT_KEY="your-tiktok-client-key"
-TIKTOK_CLIENT_SECRET="your-tiktok-client-secret"
-
-# Cron Job
-CRON_SECRET="your-cron-secret"
+# Next.js Configuration
+NEXTAUTH_URL=http://localhost:3000
+NEXTAUTH_SECRET=your_nextauth_secret
 ```
 
 ## Installation
@@ -83,40 +68,12 @@ CRON_SECRET="your-cron-secret"
    npm install
    ```
 
-3. Set up the database:
-   ```bash
-   npx prisma migrate deploy
-   ```
-
-4. Start the development server:
+3. Start the development server:
    ```bash
    npm run dev
    ```
 
-5. Open [http://localhost:3000](http://localhost:3000) in your browser
-
-## Deployment
-
-1. Create a new project on Vercel:
-   ```bash
-   npm i -g vercel
-   vercel login
-   vercel
-   ```
-
-2. Set up environment variables in Vercel:
-   - Go to your project settings
-   - Add all environment variables from `.env.local`
-   - Ensure `NEXTAUTH_URL` is set to your production domain
-
-3. Configure social media API credentials:
-   - Create developer accounts on each platform
-   - Set up OAuth applications
-   - Add credentials to environment variables
-
-4. Set up the cron job:
-   - The `vercel.json` file already includes the cron job configuration
-   - Vercel will automatically run the cron job every 5 minutes
+4. Open [http://localhost:3000](http://localhost:3000) in your browser
 
 ## Project Structure
 
@@ -131,14 +88,12 @@ EZPost/
 │   │   ├── dashboard/   # Dashboard-specific components
 │   │   └── ui/         # Reusable UI components
 │   ├── lib/            # Utility functions and helpers
+│   │   ├── firebase/   # Firebase configuration
 │   │   ├── ai/         # AI-related functions
-│   │   ├── posting/    # Posting automation
-│   │   └── scheduling/ # Scheduling logic
+│   │   └── stripe/     # Stripe integration
 │   └── types/         # TypeScript type definitions
-├── prisma/            # Database schema and migrations
-├── scripts/          # Setup and utility scripts
 ├── public/           # Static assets
-└── tests/           # Test files (coming soon)
+└── tests/           # Test files
 ```
 
 ## Social Media Platform Integration
@@ -196,7 +151,7 @@ The scheduling system:
 
 EZPost implements several security measures:
 - End-to-end encryption for sensitive data
-- Secure OAuth2 authentication for social media platforms
+- Secure Firebase Authentication
 - Regular security audits and updates
 - Compliance with data protection regulations
 
