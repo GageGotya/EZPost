@@ -1,6 +1,8 @@
 import React from 'react';
-import { Post } from '@prisma/client';
+import type { Database } from '@/lib/supabase/types';
 import { formatDate, formatTime } from '@/lib/utils';
+
+type Post = Database['public']['Tables']['social_posts']['Row'];
 
 interface PostsTimelineProps {
   posts: Post[];

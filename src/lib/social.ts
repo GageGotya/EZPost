@@ -1,5 +1,8 @@
-import { prisma } from './prisma';
-import type { Post, Account } from '@prisma/client';
+import { supabase } from './supabase/client';
+import type { Database } from './supabase/types';
+
+type Post = Database['public']['Tables']['social_posts']['Row'];
+type Account = Database['public']['Tables']['users']['Row'];
 
 export type SocialPlatform = 'twitter' | 'linkedin' | 'facebook' | 'instagram' | 'tiktok';
 

@@ -1,26 +1,51 @@
-import { Analytics } from '@prisma/client';
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
+import type { Database } from '@/lib/supabase/types';
+import {
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  Legend,
+  ResponsiveContainer,
+} from 'recharts';
+
+type Analytics = Database['public']['Tables']['post_analytics']['Row'] & {
+  platform: string;
+  metric: string;
+  value: number;
+};
 
 interface PlatformStatsProps {
   analytics: Analytics[];
 }
 
-interface PlatformMetrics {
-  platform: string;
-  engagement: number;
-  reach: number;
-  clicks: number;
-  conversions: number;
-}
-
 export function PlatformStats({ analytics }: PlatformStatsProps) {
-  const platformData = calculatePlatformMetrics(analytics);
+  // Group analytics by platform
+  const platformData = analytics.reduce((acc, stat) => {
+    const platform = stat.platform;
+    if (!acc[platform]) {
+      acc[platform] = {
+        platform,
+        likes: 0,
+        comments: 0,
+        shares: 0,
+      };
+    }
+    acc[platform].likes += stat.likes;
+    acc[platform].comments += stat.comments;
+    acc[platform].shares += stat.shares;
+    return acc;
+  }, {} as Record<string, any>);
+
+  const data = Object.values(platformData);
 
   return (
-    <div className="w-full h-[400px]">
+    <div className="h-96 w-full">
+      <h2 className="text-xl font-semibold mb-4">Platform Performance</h2>
       <ResponsiveContainer width="100%" height="100%">
         <BarChart
-          data={platformData}
+          data={data}
           margin={{
             top: 20,
             right: 30,
@@ -33,60 +58,11 @@ export function PlatformStats({ analytics }: PlatformStatsProps) {
           <YAxis />
           <Tooltip />
           <Legend />
-          <Bar dataKey="engagement" fill="#8884d8" name="Engagement" />
-          <Bar dataKey="reach" fill="#82ca9d" name="Reach" />
-          <Bar dataKey="clicks" fill="#ffc658" name="Clicks" />
-          <Bar dataKey="conversions" fill="#ff7300" name="Conversions" />
+          <Bar dataKey="likes" fill="#8884d8" name="Likes" />
+          <Bar dataKey="comments" fill="#82ca9d" name="Comments" />
+          <Bar dataKey="shares" fill="#ffc658" name="Shares" />
         </BarChart>
       </ResponsiveContainer>
     </div>
   );
-}
-
-function calculatePlatformMetrics(analytics: Analytics[]): PlatformMetrics[] {
-  // Group analytics by platform
-  const platformMetrics = analytics.reduce((acc, analytic) => {
-    if (!acc[analytic.platform]) {
-      acc[analytic.platform] = {
-        platform: getPlatformDisplayName(analytic.platform),
-        engagement: 0,
-        reach: 0,
-        clicks: 0,
-        conversions: 0,
-      };
-    }
-
-    switch (analytic.metric) {
-      case 'likes':
-      case 'comments':
-      case 'shares':
-        acc[analytic.platform].engagement += analytic.value;
-        break;
-      case 'impressions':
-        acc[analytic.platform].reach += analytic.value;
-        break;
-      case 'clicks':
-        acc[analytic.platform].clicks += analytic.value;
-        break;
-      case 'conversions':
-        acc[analytic.platform].conversions += analytic.value;
-        break;
-    }
-
-    return acc;
-  }, {} as Record<string, PlatformMetrics>);
-
-  return Object.values(platformMetrics);
-}
-
-function getPlatformDisplayName(platform: string): string {
-  const displayNames: Record<string, string> = {
-    twitter: 'Twitter',
-    linkedin: 'LinkedIn',
-    instagram: 'Instagram',
-    facebook: 'Facebook',
-    tiktok: 'TikTok',
-  };
-
-  return displayNames[platform] || platform;
 } 

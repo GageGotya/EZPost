@@ -1,4 +1,13 @@
-import { Analytics, UserPreferences } from '@prisma/client';
+import type { Database } from '../supabase/types';
+
+type Analytics = Database['public']['Tables']['post_analytics']['Row'] & {
+  timestamp: string;
+  value: number;
+};
+
+type UserPreferences = Database['public']['Tables']['user_preferences']['Row'] & {
+  timezone: string;
+};
 
 type Platform = 'twitter' | 'linkedin' | 'instagram' | 'facebook' | 'tiktok';
 
@@ -104,4 +113,24 @@ export function generatePostingSchedule(
   }
 
   return schedule;
+}
+
+function getPostingFrequency(preferences: UserPreferences): number {
+  switch (preferences.post_frequency) {
+    case 'daily':
+      return 1;
+    case '3x_week':
+      return 3;
+    case 'weekly':
+      return 7;
+    default:
+      return 1;
+  }
+}
+
+export function generateSchedule(preferences: UserPreferences, analytics: Analytics[]): Date[] {
+  const schedule: Date[] = [];
+  const postsPerWeek = getPostingFrequency(preferences);
+  
+  // ... rest of the file ...
 } 

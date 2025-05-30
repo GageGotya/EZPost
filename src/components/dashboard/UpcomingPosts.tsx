@@ -1,60 +1,56 @@
-import { Post } from '@prisma/client';
+import type { Database } from '@/lib/supabase/types';
 import { formatDate, formatTime, truncateText, getRelativeTimeString } from '@/lib/utils';
+
+type Post = Database['public']['Tables']['social_posts']['Row'];
 
 interface UpcomingPostsProps {
   posts: Post[];
 }
 
 export function UpcomingPosts({ posts }: UpcomingPostsProps) {
-  // Filter and sort upcoming posts
-  const upcomingPosts = posts
-    .filter(post => post.status === 'scheduled' && post.scheduledFor > new Date())
-    .sort((a, b) => a.scheduledFor!.getTime() - b.scheduledFor!.getTime())
-    .slice(0, 5); // Show only next 5 posts
-
-  if (upcomingPosts.length === 0) {
-    return (
-      <div className="text-center text-gray-500 py-8">
-        No upcoming posts scheduled
-      </div>
-    );
-  }
+  // Sort posts by scheduled time
+  const sortedPosts = [...posts].sort((a, b) => {
+    if (!a.scheduled_for || !b.scheduled_for) return 0;
+    return new Date(a.scheduled_for).getTime() - new Date(b.scheduled_for).getTime();
+  });
 
   return (
     <div className="space-y-4">
-      {upcomingPosts.map((post) => (
-        <div
-          key={post.id}
-          className="bg-white rounded-lg border p-4 hover:shadow-md transition-shadow"
-        >
-          <div className="flex items-start justify-between">
-            <div className="flex-1 min-w-0">
-              <p className="text-sm font-medium text-gray-900 truncate">
-                {truncateText(post.content, 100)}
-              </p>
-              <div className="mt-1 flex items-center text-sm text-gray-500">
-                <span className="truncate">
-                  {formatDate(post.scheduledFor!)} at {formatTime(post.scheduledFor!)}
-                </span>
-                <span className="mx-2">•</span>
-                <span className="text-primary-600">
-                  {getRelativeTimeString(post.scheduledFor!)}
-                </span>
+      <h2 className="text-xl font-semibold">Upcoming Posts</h2>
+      {sortedPosts.length === 0 ? (
+        <p className="text-gray-500">No upcoming posts scheduled</p>
+      ) : (
+        <div className="space-y-3">
+          {sortedPosts.map((post) => (
+            <div
+              key={post.id}
+              className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow"
+            >
+              <div className="flex justify-between items-start">
+                <div className="space-y-2">
+                  <p className="text-sm text-gray-500">
+                    {post.scheduled_for && (
+                      <>
+                        {formatDate(new Date(post.scheduled_for))} at{' '}
+                        {formatTime(new Date(post.scheduled_for))} (
+                        {getRelativeTimeString(new Date(post.scheduled_for))})
+                      </>
+                    )}
+                  </p>
+                  <p className="text-gray-700 dark:text-gray-300">
+                    {truncateText(post.content, 100)}
+                  </p>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <span className="text-sm font-medium text-gray-500">
+                    {post.platform}
+                  </span>
+                </div>
               </div>
             </div>
-            <div className="ml-4 flex-shrink-0">
-              {post.platforms.map((platform) => (
-                <span
-                  key={platform}
-                  className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800 mr-2"
-                >
-                  {getPlatformEmoji(platform)} {platform}
-                </span>
-              ))}
-            </div>
-          </div>
+          ))}
         </div>
-      ))}
+      )}
     </div>
   );
 }

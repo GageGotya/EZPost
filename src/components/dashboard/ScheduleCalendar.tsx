@@ -1,7 +1,9 @@
 import { useState } from 'react';
 import { Calendar } from '@/components/ui/calendar';
-import { Post } from '@prisma/client';
+import type { Database } from '@/lib/supabase/types';
 import { format } from 'date-fns';
+
+type Post = Database['public']['Tables']['social_posts']['Row'];
 
 interface ScheduleCalendarProps {
   posts: Post[];
