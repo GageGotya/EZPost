@@ -3,7 +3,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { Disclosure, Menu, Transition } from '@headlessui/react';
 import { Bars3Icon, XMarkIcon } from '@heroicons/react/24/outline';
-import { Session } from 'next-auth';
+import { useClerk, useUser } from '@clerk/nextjs';
 
 const navigation = [
   { name: 'Dashboard', href: '/dashboard' },
@@ -17,12 +17,12 @@ function classNames(...classes: string[]) {
   return classes.filter(Boolean).join(' ');
 }
 
-interface DashboardNavProps {
-  user: Session['user'];
-}
-
-export default function DashboardNav({ user }: DashboardNavProps) {
+export default function DashboardNav() {
   const pathname = usePathname();
+  const { signOut } = useClerk();
+  const { user } = useUser();
+
+  if (!user) return null;
 
   return (
     <Disclosure as="nav" className="bg-white shadow">
@@ -59,7 +59,7 @@ export default function DashboardNav({ user }: DashboardNavProps) {
                     <Menu.Button className="flex rounded-full bg-white text-sm focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2">
                       <span className="sr-only">Open user menu</span>
                       <div className="h-8 w-8 rounded-full bg-gray-200 flex items-center justify-center">
-                        {user.name?.[0] || user.email[0]}
+                        {user.firstName?.[0] || user.emailAddresses[0].emailAddress[0]}
                       </div>
                     </Menu.Button>
                   </div>
@@ -151,15 +151,15 @@ export default function DashboardNav({ user }: DashboardNavProps) {
               <div className="flex items-center px-4">
                 <div className="flex-shrink-0">
                   <div className="h-10 w-10 rounded-full bg-gray-200 flex items-center justify-center">
-                    {user.name?.[0] || user.email[0]}
+                    {user.firstName?.[0] || user.emailAddresses[0].emailAddress[0]}
                   </div>
                 </div>
                 <div className="ml-3">
                   <div className="text-base font-medium text-gray-800">
-                    {user.name}
+                    {user.firstName} {user.lastName}
                   </div>
                   <div className="text-sm font-medium text-gray-500">
-                    {user.email}
+                    {user.emailAddresses[0].emailAddress}
                   </div>
                 </div>
               </div>

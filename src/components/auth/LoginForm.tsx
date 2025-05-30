@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { signIn } from 'next-auth/react';
+import { useSignIn } from '@clerk/nextjs';
 import { useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { toast } from 'react-hot-toast';
@@ -11,27 +11,32 @@ type LoginFormData = {
 
 export default function LoginForm() {
   const router = useRouter();
+  const { isLoaded, signIn, setActive } = useSignIn();
   const [isLoading, setIsLoading] = useState(false);
   const { register, handleSubmit, formState: { errors } } = useForm<LoginFormData>();
+
+  if (!isLoaded) {
+    return null;
+  }
 
   const onSubmit = async (data: LoginFormData) => {
     try {
       setIsLoading(true);
-      const result = await signIn('credentials', {
-        redirect: false,
-        email: data.email,
+      const result = await signIn.create({
+        identifier: data.email,
         password: data.password,
       });
 
-      if (result?.error) {
+      if (result.status === 'complete') {
+        await setActive({ session: result.createdSessionId });
+        router.push('/dashboard');
+        toast.success('Welcome back!');
+      } else {
         toast.error('Invalid email or password');
-        return;
       }
-
-      router.push('/dashboard');
-      toast.success('Welcome back!');
     } catch (error) {
       toast.error('An error occurred. Please try again.');
+      console.error('Sign in error:', error);
     } finally {
       setIsLoading(false);
     }
@@ -91,20 +96,14 @@ export default function LoginForm() {
       </div>
 
       <div className="flex items-center justify-between">
-        <div className="flex items-center">
-          <input
-            id="remember-me"
-            name="remember-me"
-            type="checkbox"
-            className="h-4 w-4 text-primary focus:ring-primary border-gray-300 rounded"
-          />
-          <label htmlFor="remember-me" className="ml-2 block text-sm text-gray-900">
-            Remember me
-          </label>
+        <div className="text-sm">
+          <a href="/sign-up" className="font-medium text-primary hover:text-primary/90">
+            Don't have an account? Sign up
+          </a>
         </div>
 
         <div className="text-sm">
-          <a href="/forgot-password" className="font-medium text-primary hover:text-primary/90">
+          <a href="/reset-password" className="font-medium text-primary hover:text-primary/90">
             Forgot your password?
           </a>
         </div>
