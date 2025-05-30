@@ -2,6 +2,10 @@
 
 EZPost is a comprehensive social media management platform that leverages artificial intelligence to help small and medium-sized businesses automate and optimize their social media presence across multiple platforms.
 
+## Database Configuration
+
+This project uses Neon PostgreSQL for the database, configured with Prisma ORM. The database connection is managed through connection pooling for optimal performance in a serverless environment.
+
 ## Features
 
 - **AI-Powered Content Creation**: Automatically generate engaging, platform-optimized content for TikTok, LinkedIn, Instagram, Twitter, and Facebook

@@ -1,87 +1,85 @@
 // This is your Prisma schema file,
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
 }
 
 datasource db {
   provider = "postgresql"
-  url      = env("POSTGRES_PRISMA_URL")
+  url = env("POSTGRES_URL")
+  directUrl = env("POSTGRES_URL_NON_POOLING")
 }
 
 model User {
-  id            String    @id @default(cuid())
-  email         String    @unique
-  name          String?
-  password      String
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
-  accounts      Account[]
-  posts         Post[]
-  preferences   UserPreferences?
-  analytics     Analytics[]
+  id          String           @id @default(cuid())
+  email       String           @unique
+  name        String?
+  password    String
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
+  accounts    Account[]
+  analytics   Analytics[]
+  posts       Post[]
+  preferences UserPreferences?
 }
 
 model Account {
-  id                String   @id @default(cuid())
+  id               String    @id @default(cuid())
   userId           String
-  platform         String   // e.g., "twitter", "instagram", "linkedin"
+  platform         String
   accessToken      String
   refreshToken     String?
   expiresAt        DateTime?
   platformUsername String?
-  createdAt        DateTime @default(now())
-  updatedAt        DateTime @updatedAt
-  user             User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+  user             User      @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([userId, platform])
 }
 
 model Post {
-  id          String    @id @default(cuid())
-  userId      String
-  content     String
-  mediaUrls   String[]
-  platforms   String[]  // Array of platforms this post is intended for
-  status      String    // "draft", "scheduled", "published", "failed"
+  id           String      @id @default(cuid())
+  userId       String
+  content      String
+  mediaUrls    String[]
+  platforms    String[]
+  status       String
   scheduledFor DateTime?
-  publishedAt DateTime?
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
-  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-  analytics   Analytics[]
+  publishedAt  DateTime?
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
+  analytics    Analytics[]
+  user         User        @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model UserPreferences {
-  id                  String   @id @default(cuid())
-  userId              String   @unique
-  user                User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  timezone            String   @default("UTC")
-  postFrequency       Int      @default(1)  // Posts per day
-  preferredPostTimes  String[] // Array of preferred posting times
-  industryType        String?
-  contentPreferences  Json?    // Stored as JSON object
-  brandVoice          String?  // Brand voice description
-  brandKeywords       String[]
-  autoSchedule        Boolean  @default(true)
+  id                 String   @id @default(cuid())
+  userId             String   @unique
+  timezone           String   @default("UTC")
+  postFrequency      Int      @default(1)
+  preferredPostTimes String[]
+  industryType       String?
+  contentPreferences Json?
+  brandVoice         String?
+  brandKeywords      String[]
+  autoSchedule       Boolean  @default(true)
   createdAt          DateTime @default(now())
   updatedAt          DateTime @updatedAt
+  user               User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model Analytics {
-  id          String   @id @default(cuid())
-  userId      String
-  postId      String?
-  platform    String
-  metric      String   // e.g., "likes", "shares", "comments"
-  value       Int
-  timestamp   DateTime
-  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  post        Post?    @relation(fields: [postId], references: [id], onDelete: Cascade)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id        String   @id @default(cuid())
+  userId    String
+  postId    String?
+  platform  String
+  metric    String
+  value     Int
+  timestamp DateTime
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  post      Post?    @relation(fields: [postId], references: [id], onDelete: Cascade)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }

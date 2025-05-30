@@ -1,10 +1,18 @@
-import { neon } from '@neondatabase/serverless';
+import { PrismaClient } from '@prisma/client';
 
-const sql = neon(process.env.POSTGRES_PRISMA_URL!);
+const globalForPrisma = globalThis as unknown as {
+  prisma: PrismaClient | undefined;
+};
+
+export const prisma = globalForPrisma.prisma ?? new PrismaClient();
+
+if (process.env.NODE_ENV !== 'production') {
+  globalForPrisma.prisma = prisma;
+}
 
 export async function testConnection() {
   try {
-    const result = await sql`SELECT 1`;
+    const result = await prisma.$queryRaw`SELECT 1`;
     console.log('Database connection successful:', result);
     return true;
   } catch (error) {
@@ -13,4 +21,4 @@ export async function testConnection() {
   }
 }
 
-export { sql }; 
+export { prisma }; 
