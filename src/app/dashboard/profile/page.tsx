@@ -6,6 +6,10 @@ import { useUserPreferences } from '@/hooks/useUserPreferences';
 import { useState } from 'react';
 import { BusinessType, ContentTone, Platform, PostFrequency } from '@/lib/types';
 import toast from 'react-hot-toast';
+import type { Database } from '@/lib/supabase/types';
+
+type BusinessProfile = Database['public']['Tables']['business_profiles']['Row'];
+type UserPreferences = Database['public']['Tables']['user_preferences']['Row'];
 
 export default function Profile() {
   const { preferences, updatePreferences, updateBusinessProfile } = useUserPreferences();
@@ -37,11 +41,11 @@ export default function Profile() {
 
     try {
       const formData = new FormData(e.currentTarget);
-      const businessProfile = {
+      const businessProfile: Partial<BusinessProfile> = {
         type: formData.get('businessType') as BusinessType,
         name: formData.get('businessName') as string,
         description: formData.get('description') as string,
-        targetAudience: formData.get('targetAudience') as string,
+        target_audience: formData.get('targetAudience') as string,
         keywords: formData.get('keywords')?.toString().split(',').map(k => k.trim()) || [],
         tone: formData.get('tone') as ContentTone,
       };
@@ -52,9 +56,9 @@ export default function Profile() {
 
       await updateBusinessProfile(businessProfile);
       await updatePreferences({
-        postFrequency: formData.get('postFrequency') as PostFrequency,
+        post_frequency: formData.get('postFrequency') as PostFrequency,
         platforms: selectedPlatforms,
-        autoSchedule: formData.get('autoSchedule') === 'on',
+        auto_schedule: formData.get('autoSchedule') === 'on',
       });
 
       toast.success('Profile updated successfully');
@@ -98,7 +102,7 @@ export default function Profile() {
                       <select
                         id="businessType"
                         name="businessType"
-                        defaultValue={preferences.businessProfile.type}
+                        defaultValue={preferences.business_profile?.type}
                         className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
                       >
                         {businessTypes.map((type) => (
@@ -117,7 +121,7 @@ export default function Profile() {
                         type="text"
                         name="businessName"
                         id="businessName"
-                        defaultValue={preferences.businessProfile.name}
+                        defaultValue={preferences.business_profile?.name}
                         className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
                       />
                     </div>
@@ -130,7 +134,7 @@ export default function Profile() {
                         id="description"
                         name="description"
                         rows={3}
-                        defaultValue={preferences.businessProfile.description}
+                        defaultValue={preferences.business_profile?.description || ''}
                         className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
                       />
                     </div>
@@ -143,7 +147,7 @@ export default function Profile() {
                         type="text"
                         name="targetAudience"
                         id="targetAudience"
-                        defaultValue={preferences.businessProfile.targetAudience}
+                        defaultValue={preferences.business_profile?.target_audience || ''}
                         className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
                       />
                     </div>
@@ -156,7 +160,7 @@ export default function Profile() {
                         type="text"
                         name="keywords"
                         id="keywords"
-                        defaultValue={preferences.businessProfile.keywords.join(', ')}
+                        defaultValue={preferences.business_profile?.keywords?.join(', ') || ''}
                         className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
                       />
                     </div>
@@ -183,7 +187,7 @@ export default function Profile() {
                               id={`platform_${platform.value}`}
                               name={`platform_${platform.value}`}
                               type="checkbox"
-                              defaultChecked={preferences.platforms.includes(platform.value)}
+                              defaultChecked={preferences.platforms?.includes(platform.value)}
                               className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
                             />
                             <label
@@ -204,30 +208,12 @@ export default function Profile() {
                       <select
                         id="postFrequency"
                         name="postFrequency"
-                        defaultValue={preferences.postFrequency}
+                        defaultValue={preferences.post_frequency}
                         className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
                       >
-                        {postFrequencies.map((frequency) => (
-                          <option key={frequency.value} value={frequency.value}>
-                            {frequency.label}
-                          </option>
-                        ))}
-                      </select>
-                    </div>
-
-                    <div className="mt-6">
-                      <label htmlFor="tone" className="block text-sm font-medium text-gray-700">
-                        Content Tone
-                      </label>
-                      <select
-                        id="tone"
-                        name="tone"
-                        defaultValue={preferences.businessProfile.tone}
-                        className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
-                      >
-                        {contentTones.map((tone) => (
-                          <option key={tone.value} value={tone.value}>
-                            {tone.label}
+                        {postFrequencies.map((freq) => (
+                          <option key={freq.value} value={freq.value}>
+                            {freq.label}
                           </option>
                         ))}
                       </select>
@@ -240,7 +226,7 @@ export default function Profile() {
                             id="autoSchedule"
                             name="autoSchedule"
                             type="checkbox"
-                            defaultChecked={preferences.autoSchedule}
+                            defaultChecked={preferences.auto_schedule}
                             className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
                           />
                         </div>
@@ -249,7 +235,7 @@ export default function Profile() {
                             Auto-schedule posts
                           </label>
                           <p className="text-gray-500">
-                            Let AI determine the best time to post your content.
+                            Let AI determine the best times to post your content.
                           </p>
                         </div>
                       </div>
@@ -260,11 +246,7 @@ export default function Profile() {
 
               <div className="pt-5">
                 <div className="flex justify-end">
-                  <Button
-                    type="submit"
-                    loading={loading}
-                    disabled={loading}
-                  >
+                  <Button type="submit" loading={loading}>
                     Save Changes
                   </Button>
                 </div>

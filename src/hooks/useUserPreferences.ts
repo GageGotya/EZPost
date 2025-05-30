@@ -6,15 +6,31 @@ import type { Database } from '@/lib/supabase/types';
 type UserPreferences = Database['public']['Tables']['user_preferences']['Row'];
 type BusinessProfile = Database['public']['Tables']['business_profiles']['Row'];
 
-const DEFAULT_PREFERENCES: Partial<UserPreferences> = {
+interface CombinedPreferences extends UserPreferences {
+  business_profile?: BusinessProfile;
+}
+
+const DEFAULT_PREFERENCES: Partial<CombinedPreferences> = {
   post_frequency: 'weekly',
   platforms: ['twitter', 'linkedin', 'instagram'],
-  auto_schedule: true
+  auto_schedule: true,
+  business_profile: {
+    id: '',
+    user_id: '',
+    type: 'other',
+    name: '',
+    description: null,
+    target_audience: null,
+    keywords: [],
+    tone: 'professional',
+    created_at: new Date().toISOString(),
+    updated_at: new Date().toISOString(),
+  } as BusinessProfile,
 };
 
 export function useUserPreferences() {
   const { userId } = useAuth();
-  const [preferences, setPreferences] = useState<UserPreferences | null>(null);
+  const [preferences, setPreferences] = useState<CombinedPreferences | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -25,6 +41,7 @@ export function useUserPreferences() {
 
   const fetchPreferences = async () => {
     try {
+      // Fetch user preferences
       const { data: prefs, error: prefsError } = await supabase
         .from('user_preferences')
         .select('*')
@@ -35,7 +52,21 @@ export function useUserPreferences() {
         throw prefsError;
       }
 
-      setPreferences(prefs);
+      // Fetch business profile
+      const { data: profile, error: profileError } = await supabase
+        .from('business_profiles')
+        .select('*')
+        .eq('user_id', userId)
+        .single();
+
+      if (profileError && profileError.code !== 'PGRST116') { // Ignore "not found" error
+        throw profileError;
+      }
+
+      setPreferences({
+        ...prefs,
+        business_profile: profile || DEFAULT_PREFERENCES.business_profile,
+      });
     } catch (error) {
       console.error('Error fetching preferences:', error);
     } finally {
@@ -71,7 +102,7 @@ export function useUserPreferences() {
         .from('business_profiles')
         .upsert({
           ...profile,
-          user_id: userId
+          user_id: userId,
         })
         .eq('user_id', userId);
 
@@ -90,6 +121,6 @@ export function useUserPreferences() {
     preferences: preferences || DEFAULT_PREFERENCES,
     loading,
     updatePreferences,
-    updateBusinessProfile
+    updateBusinessProfile,
   };
 } 
