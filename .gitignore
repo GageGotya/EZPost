@@ -23,11 +23,8 @@ yarn-debug.log*
 yarn-error.log*
 
 # local env files
-.env
 .env*.local
-.env.development
-.env.test
-.env.production
+.env
 
 # vercel
 .vercel
@@ -37,11 +34,11 @@ yarn-error.log*
 next-env.d.ts
 
 # IDE
-.vscode/
-.idea/
+.idea
+.vscode
+*.swp
+*.swo
 
 # Logs
 logs
 *.log
-
-.vercel

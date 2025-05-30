@@ -1,23 +1,31 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { onAuthStateChanged, User } from 'firebase/auth';
-import { auth } from '@/lib/firebase';
+import { useClerk, useUser } from '@clerk/nextjs';
+import { useRouter } from 'next/navigation';
 
 export function useAuth() {
-  const [user, setUser] = useState<User | null>(null);
-  const [loading, setLoading] = useState(true);
+  const { user, isLoaded: loaded } = useUser();
+  const { signOut: clerkSignOut } = useClerk();
+  const router = useRouter();
 
-  useEffect(() => {
-    if (typeof window === 'undefined') return;
+  const signIn = async (email: string, password: string) => {
+    router.push('/sign-in');
+  };
 
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
-      setUser(user);
-      setLoading(false);
-    });
+  const signUp = async (email: string, password: string) => {
+    router.push('/sign-up');
+  };
 
-    return () => unsubscribe();
-  }, []);
+  const signOut = async () => {
+    await clerkSignOut();
+    router.push('/');
+  };
 
-  return { user, loading };
+  return {
+    user,
+    loading: !loaded,
+    signIn,
+    signUp,
+    signOut,
+  };
 } 

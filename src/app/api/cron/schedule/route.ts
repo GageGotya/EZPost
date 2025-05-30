@@ -1,5 +1,11 @@
 import { NextResponse } from 'next/server';
-import { auth } from '@/lib/firebase-admin';
+import { createClient } from '@supabase/supabase-js';
+
+// Initialize Supabase client
+const supabase = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL!,
+  process.env.SUPABASE_SERVICE_ROLE_KEY!
+);
 
 export async function GET(request: Request) {
   try {
@@ -9,10 +15,29 @@ export async function GET(request: Request) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    // For now, just return success as we'll implement scheduling later
+    // Get posts that need to be published
+    const { data: posts, error } = await supabase
+      .from('social_posts')
+      .select('*')
+      .eq('status', 'scheduled')
+      .lte('scheduled_for', new Date().toISOString());
+
+    if (error) {
+      throw error;
+    }
+
+    // Process each post (in a real implementation, this would publish to social media)
+    for (const post of posts || []) {
+      await supabase
+        .from('social_posts')
+        .update({ status: 'published', published_at: new Date().toISOString() })
+        .eq('id', post.id);
+    }
+
     return NextResponse.json({ 
       success: true,
-      message: 'Schedule check completed successfully'
+      message: 'Schedule check completed successfully',
+      processed: posts?.length || 0
     });
   } catch (error) {
     console.error('Schedule check error:', error);

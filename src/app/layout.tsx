@@ -1,50 +1,28 @@
-import React from 'react'
-import type { Metadata } from 'next'
-import { Inter } from 'next/font/google'
-import './globals.css'
-import { Toaster } from 'react-hot-toast'
+import './globals.css';
+import { Inter } from 'next/font/google';
+import { ClerkProvider } from '@clerk/nextjs';
+import { Toaster } from 'react-hot-toast';
 
-const inter = Inter({ subsets: ['latin'] })
+const inter = Inter({ subsets: ['latin'] });
 
-export const metadata: Metadata = {
+export const metadata = {
   title: 'EZPost - AI-Powered Social Media Management',
-  description: 'Automate your social media presence across multiple platforms with AI-powered content creation and scheduling.',
-  metadataBase: new URL('https://ezpost.net'),
-  openGraph: {
-    title: 'EZPost - AI-Powered Social Media Management',
-    description: 'Automate your social media presence across multiple platforms with AI-powered content creation and scheduling.',
-    url: 'https://ezpost.net',
-    siteName: 'EZPost',
-    images: [
-      {
-        url: '/images/og-image.jpg',
-        width: 1200,
-        height: 630,
-        alt: 'EZPost - AI-Powered Social Media Management',
-      },
-    ],
-    locale: 'en_US',
-    type: 'website',
-  },
-  twitter: {
-    card: 'summary_large_image',
-    title: 'EZPost - AI-Powered Social Media Management',
-    description: 'Automate your social media presence across multiple platforms with AI-powered content creation and scheduling.',
-    images: ['/images/og-image.jpg'],
-  },
-}
+  description: 'Automate and optimize your social media presence with AI-powered content creation and scheduling.',
+};
 
 export default function RootLayout({
   children,
 }: {
-  children: React.ReactNode
+  children: React.ReactNode;
 }) {
   return (
-    <html lang="en">
-      <body className={inter.className}>
-        {children}
-        <Toaster position="top-center" />
-      </body>
-    </html>
-  )
+    <ClerkProvider>
+      <html lang="en">
+        <body className={inter.className}>
+          {children}
+          <Toaster position="bottom-right" />
+        </body>
+      </html>
+    </ClerkProvider>
+  );
 } 

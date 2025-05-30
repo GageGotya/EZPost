@@ -1,3 +1,5 @@
+'use client';
+
 import { Layout } from '@/components/layout/Layout';
 import { Button } from '@/components/ui/Button';
 import { useState } from 'react';

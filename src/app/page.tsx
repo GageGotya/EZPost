@@ -1,3 +1,5 @@
+import Link from 'next/link';
+import { SignInButton, SignUpButton } from '@clerk/nextjs';
 import { LandingLayout } from '@/components/layout/LandingLayout';
 import { Button } from '@/components/ui/Button';
 import {
@@ -80,151 +82,51 @@ const testimonials = [
 
 export default function Home() {
   return (
-    <LandingLayout>
-      {/* Hero section */}
-      <div className="relative isolate overflow-hidden bg-white">
-        <div className="mx-auto max-w-7xl px-6 pb-24 pt-10 sm:pb-32 lg:flex lg:px-8 lg:py-40">
-          <div className="mx-auto max-w-2xl lg:mx-0 lg:max-w-xl lg:flex-shrink-0 lg:pt-8">
-            <div className="mt-24 sm:mt-32 lg:mt-16">
-              <a href="/pricing" className="inline-flex space-x-6">
-                <span className="rounded-full bg-blue-600/10 px-3 py-1 text-sm font-semibold leading-6 text-blue-600 ring-1 ring-inset ring-blue-600/10">
-                  What's new
-                </span>
-                <span className="inline-flex items-center space-x-2 text-sm font-medium leading-6 text-gray-600">
-                  <span>Just shipped v1.0</span>
-                </span>
-              </a>
-            </div>
-            <h1 className="mt-10 text-4xl font-bold tracking-tight text-gray-900 sm:text-6xl">
-              AI-Powered Social Media Management Made Simple
-            </h1>
-            <p className="mt-6 text-lg leading-8 text-gray-600">
-              Create engaging content, schedule posts, and grow your social media presence with the power of AI.
-              Save time and boost engagement across all your platforms.
-            </p>
-            <div className="mt-10 flex items-center gap-x-6">
-              <Button onClick={() => window.location.href = '/signup'}>
-                Get started
-              </Button>
-              <Button
-                variant="outline"
-                onClick={() => window.location.href = '/features'}
-              >
-                Learn more
-              </Button>
-            </div>
+    <div className="min-h-screen bg-gradient-to-b from-white to-gray-50">
+      <div className="container-custom">
+        {/* Navigation */}
+        <nav className="flex items-center justify-between py-6">
+          <div className="text-2xl font-bold text-primary-600">EZPost</div>
+          <div className="space-x-4">
+            <Link href="/pricing" className="text-gray-600 hover:text-gray-900">Pricing</Link>
+            <Link href="/about" className="text-gray-600 hover:text-gray-900">About</Link>
+            <SignInButton mode="modal">
+              <button className="text-primary-600 hover:text-primary-700">Sign In</button>
+            </SignInButton>
           </div>
-          <div className="mx-auto mt-16 flex max-w-2xl sm:mt-24 lg:ml-10 lg:mr-0 lg:mt-0 lg:max-w-none lg:flex-none xl:ml-32">
-            <div className="max-w-3xl flex-none sm:max-w-5xl lg:max-w-none">
-              <img
-                src="/dashboard-preview.png"
-                alt="App screenshot"
-                width={2432}
-                height={1442}
-                className="w-[76rem] rounded-md bg-white/5 shadow-2xl ring-1 ring-white/10"
-              />
-            </div>
-          </div>
-        </div>
-      </div>
+        </nav>
 
-      {/* Feature section */}
-      <div className="bg-white py-24 sm:py-32">
-        <div className="mx-auto max-w-7xl px-6 lg:px-8">
-          <div className="mx-auto max-w-2xl lg:text-center">
-            <h2 className="text-base font-semibold leading-7 text-blue-600">
-              Everything you need
-            </h2>
-            <p className="mt-2 text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">
-              Powerful features for modern social media management
-            </p>
-            <p className="mt-6 text-lg leading-8 text-gray-600">
-              Streamline your social media workflow with our comprehensive suite of tools and AI-powered features.
-            </p>
-          </div>
-          <div className="mx-auto mt-16 max-w-2xl sm:mt-20 lg:mt-24 lg:max-w-none">
-            <dl className="grid max-w-xl grid-cols-1 gap-x-8 gap-y-16 lg:max-w-none lg:grid-cols-3">
-              {features.map((feature) => (
-                <div key={feature.name} className="flex flex-col">
-                  <dt className="flex items-center gap-x-3 text-base font-semibold leading-7 text-gray-900">
-                    <feature.icon
-                      className="h-5 w-5 flex-none text-blue-600"
-                      aria-hidden="true"
-                    />
-                    {feature.name}
-                  </dt>
-                  <dd className="mt-4 flex flex-auto flex-col text-base leading-7 text-gray-600">
-                    <p className="flex-auto">{feature.description}</p>
-                  </dd>
-                </div>
-              ))}
-            </dl>
-          </div>
+        {/* Hero Section */}
+        <div className="py-24 text-center">
+          <h1 className="text-6xl font-bold text-gray-900 mb-6">
+            AI-Powered Social Media Management
+          </h1>
+          <p className="text-xl text-gray-600 mb-12 max-w-2xl mx-auto">
+            Create, schedule, and analyze your social media content across all platforms with the power of AI.
+          </p>
+          <SignUpButton mode="modal">
+            <button className="btn-primary text-lg px-8 py-3">
+              Get Started Free
+            </button>
+          </SignUpButton>
         </div>
-      </div>
 
-      {/* Testimonial section */}
-      <div className="bg-gray-50 py-24 sm:py-32">
-        <div className="mx-auto max-w-7xl px-6 lg:px-8">
-          <div className="mx-auto max-w-xl text-center">
-            <h2 className="text-lg font-semibold leading-8 tracking-tight text-blue-600">
-              Testimonials
-            </h2>
-            <p className="mt-2 text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">
-              Loved by businesses worldwide
-            </p>
+        {/* Features Grid */}
+        <div className="grid md:grid-cols-3 gap-8 py-12">
+          <div className="p-6 bg-white rounded-xl shadow-sm">
+            <h3 className="text-xl font-semibold mb-3">AI Content Creation</h3>
+            <p className="text-gray-600">Generate engaging content optimized for each platform automatically.</p>
           </div>
-          <div className="mx-auto mt-16 flow-root max-w-2xl sm:mt-20 lg:mx-0 lg:max-w-none">
-            <div className="-mt-8 sm:-mx-4 sm:columns-2 sm:text-[0] lg:columns-3">
-              {testimonials.map((testimonial) => (
-                <div
-                  key={testimonial.author.name}
-                  className="pt-8 sm:inline-block sm:w-full sm:px-4"
-                >
-                  <figure className="rounded-2xl bg-white p-8 text-sm leading-6">
-                    <blockquote className="text-gray-900">
-                      <p>{`"${testimonial.content}"`}</p>
-                    </blockquote>
-                    <figcaption className="mt-6 flex items-center gap-x-4">
-                      <div>
-                        <div className="font-semibold text-gray-900">
-                          {testimonial.author.name}
-                        </div>
-                        <div className="text-gray-600">{`${testimonial.author.role}, ${testimonial.author.company}`}</div>
-                      </div>
-                    </figcaption>
-                  </figure>
-                </div>
-              ))}
-            </div>
+          <div className="p-6 bg-white rounded-xl shadow-sm">
+            <h3 className="text-xl font-semibold mb-3">Smart Scheduling</h3>
+            <p className="text-gray-600">Post at the perfect time with AI-powered scheduling optimization.</p>
+          </div>
+          <div className="p-6 bg-white rounded-xl shadow-sm">
+            <h3 className="text-xl font-semibold mb-3">Analytics & Insights</h3>
+            <p className="text-gray-600">Get detailed analytics and AI-driven recommendations to improve engagement.</p>
           </div>
         </div>
       </div>
-
-      {/* CTA section */}
-      <div className="bg-white">
-        <div className="mx-auto max-w-7xl px-6 py-24 sm:py-32 lg:px-8">
-          <div className="mx-auto max-w-2xl text-center">
-            <h2 className="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">
-              Ready to transform your social media?
-            </h2>
-            <p className="mx-auto mt-6 max-w-xl text-lg leading-8 text-gray-600">
-              Join thousands of businesses using EZPost to create engaging content and grow their social media presence.
-            </p>
-            <div className="mt-10 flex items-center justify-center gap-x-6">
-              <Button onClick={() => window.location.href = '/signup'}>
-                Get started today
-              </Button>
-              <Button
-                variant="outline"
-                onClick={() => window.location.href = '/pricing'}
-              >
-                View pricing
-              </Button>
-            </div>
-          </div>
-        </div>
-      </div>
-    </LandingLayout>
+    </div>
   );
 } 

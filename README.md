@@ -8,15 +8,16 @@ EZPost is a comprehensive social media management platform that leverages artifi
 - **Smart Analytics**: Track performance metrics and get AI-driven insights to improve your social media strategy
 - **Automated Scheduling**: Intelligent posting schedule that maximizes engagement
 - **Multi-Platform Support**: Manage all your social media accounts from a single dashboard
-- **Secure Authentication**: Enterprise-grade security with Firebase Authentication
+- **Secure Authentication**: Enterprise-grade security with Clerk.com
 - **Custom Branding**: Maintain consistent brand voice and style across all platforms
 
 ## Tech Stack
 
 - **Frontend**: Next.js 14, TypeScript, Tailwind CSS
-- **Authentication**: Firebase Auth
-- **Storage**: Local Storage + Firebase
-- **AI/ML**: OpenAI GPT-4
+- **Authentication**: Clerk.com
+- **Database**: Supabase
+- **AI/ML**: OpenAI GPT-4, Claude, Replicate
+- **Social Media**: Buffer API
 - **Payments**: Stripe
 - **Analytics**: Recharts
 - **Styling**: Tailwind CSS, clsx
@@ -25,8 +26,10 @@ EZPost is a comprehensive social media management platform that leverages artifi
 
 - Node.js 18.x or later
 - npm 9.x or later
-- Firebase account
+- Clerk.com account
+- Supabase account
 - OpenAI API key
+- Buffer account
 - Stripe account
 
 ## Environment Variables
@@ -34,25 +37,31 @@ EZPost is a comprehensive social media management platform that leverages artifi
 Create a `.env.local` file in the root directory with the following variables:
 
 ```bash
-# Firebase Configuration
-NEXT_PUBLIC_FIREBASE_API_KEY=your_firebase_api_key
-NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=your_firebase_auth_domain
-NEXT_PUBLIC_FIREBASE_PROJECT_ID=your_firebase_project_id
-NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET=your_firebase_storage_bucket
-NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=your_firebase_messaging_sender_id
-NEXT_PUBLIC_FIREBASE_APP_ID=your_firebase_app_id
+# Clerk Authentication
+NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=your_clerk_publishable_key
+CLERK_SECRET_KEY=your_clerk_secret_key
+
+# Supabase Configuration
+NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
+SUPABASE_SERVICE_ROLE_KEY=your_supabase_service_role_key
 
 # OpenAI Configuration
 OPENAI_API_KEY=your_openai_api_key
+
+# Claude Configuration
+ANTHROPIC_API_KEY=your_anthropic_api_key
+
+# Replicate Configuration
+REPLICATE_API_TOKEN=your_replicate_api_token
+
+# Buffer Configuration
+BUFFER_ACCESS_TOKEN=your_buffer_access_token
 
 # Stripe Configuration
 NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=your_stripe_publishable_key
 STRIPE_SECRET_KEY=your_stripe_secret_key
 STRIPE_WEBHOOK_SECRET=your_stripe_webhook_secret
-
-# Next.js Configuration
-NEXTAUTH_URL=http://localhost:3000
-NEXTAUTH_SECRET=your_nextauth_secret
 ```
 
 ## Installation
@@ -88,7 +97,7 @@ EZPost/
 │   │   ├── dashboard/   # Dashboard-specific components
 │   │   └── ui/         # Reusable UI components
 │   ├── lib/            # Utility functions and helpers
-│   │   ├── firebase/   # Firebase configuration
+│   │   ├── supabase/   # Supabase configuration and types
 │   │   ├── ai/         # AI-related functions
 │   │   └── stripe/     # Stripe integration
 │   └── types/         # TypeScript type definitions
@@ -151,7 +160,7 @@ The scheduling system:
 
 EZPost implements several security measures:
 - End-to-end encryption for sensitive data
-- Secure Firebase Authentication
+- Secure Clerk.com Authentication
 - Regular security audits and updates
 - Compliance with data protection regulations
 

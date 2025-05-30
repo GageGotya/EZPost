@@ -1,6 +1,9 @@
+'use client';
+
 import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { toast } from 'react-hot-toast';
+import { useAuth } from '@clerk/nextjs';
 import {
   DocumentTextIcon,
   PhotoIcon,
@@ -58,13 +61,19 @@ export default function ContentGenerator() {
   const { register, handleSubmit, watch, formState: { errors } } = useForm<ContentFormData>();
   const selectedPlatforms = watch('platforms', []);
   const selectedContentType = watch('contentType', 'text');
+  const { getToken } = useAuth();
 
   const onSubmit = async (data: ContentFormData) => {
     try {
       setIsGenerating(true);
+      const token = await getToken();
+      
       const response = await fetch('/api/content/generate', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
         body: JSON.stringify(data),
       });
 
@@ -76,6 +85,7 @@ export default function ContentGenerator() {
       setGeneratedContent(result.content);
       toast.success('Content generated successfully!');
     } catch (error) {
+      console.error('Error generating content:', error);
       toast.error('Failed to generate content. Please try again.');
     } finally {
       setIsGenerating(false);
