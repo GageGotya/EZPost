@@ -55,7 +55,7 @@ export default function ContentGeneration() {
       await new Promise((resolve) => setTimeout(resolve, 2000));
       
       // Use credits for each platform
-      selectedPlatforms.forEach(() => useCredit());
+      await Promise.all(selectedPlatforms.map(() => useCredit()));
       
       toast.success('Content generated successfully!');
       setPrompt('');

@@ -56,10 +56,22 @@ export function useUserCredits() {
     }
   };
 
+  const useCredit = async () => {
+    if (!credits || credits.available <= 0) {
+      throw new Error('No credits available');
+    }
+
+    await updateCredits({
+      available: credits.available - 1,
+      used: credits.used + 1,
+    });
+  };
+
   return {
     credits: credits || { available: 0, used: 0, user_id: userId!, id: '', created_at: '', updated_at: '' },
     loading,
     updateCredits,
-    fetchCredits
+    fetchCredits,
+    useCredit
   };
 } 
