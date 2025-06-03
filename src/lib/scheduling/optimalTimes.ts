@@ -131,6 +131,21 @@ function getPostingFrequency(preferences: UserPreferences): number {
 export function generateSchedule(preferences: UserPreferences, analytics: Analytics[]): Date[] {
   const schedule: Date[] = [];
   const postsPerWeek = getPostingFrequency(preferences);
-  
-  // ... rest of the file ...
+  const now = new Date();
+
+  // Calculate optimal posting times based on analytics
+  const timeSlots = analyzeHistoricalData(analytics);
+  const bestTimeSlot = findBestTimeSlot(timeSlots);
+
+  // Generate schedule for the next week
+  for (let day = 0; day < 7; day++) {
+    if (day < postsPerWeek) {
+      const scheduleDate = new Date(now);
+      scheduleDate.setDate(scheduleDate.getDate() + day);
+      scheduleDate.setHours(bestTimeSlot.hour, 0, 0, 0);
+      schedule.push(scheduleDate);
+    }
+  }
+
+  return schedule;
 } 
