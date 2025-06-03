@@ -94,7 +94,7 @@ export function generatePostingSchedule(
   platforms: Platform[]
 ): Date[] {
   const schedule: Date[] = [];
-  const postsPerDay = userPreferences.postFrequency;
+  const postsPerDay = getPostingFrequency(userPreferences);
   const now = new Date();
 
   // Generate schedule for the next 7 days
