@@ -1,10 +1,9 @@
 'use client';
 
 import { useAuth } from '@/hooks/useAuth';
-import { redirect } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
 import DashboardNav from '@/components/dashboard/DashboardNav';
-import { Toaster } from 'react-hot-toast';
 
 export default function DashboardLayout({
   children,
@@ -12,15 +11,20 @@ export default function DashboardLayout({
   children: React.ReactNode;
 }) {
   const { user, loading } = useAuth();
+  const router = useRouter();
 
   useEffect(() => {
     if (!loading && !user) {
-      redirect('/login');
+      router.replace('/login');
     }
-  }, [user, loading]);
+  }, [user, loading, router]);
 
   if (loading) {
-    return <div>Loading...</div>;
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-primary"></div>
+      </div>
+    );
   }
 
   if (!user) {
@@ -35,7 +39,6 @@ export default function DashboardLayout({
           {children}
         </div>
       </main>
-      <Toaster position="top-right" />
     </div>
   );
 } 
