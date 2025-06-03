@@ -1,4 +1,5 @@
 # EZPost - AI-Powered Social Media Management
+[![Deployed on Vercel](https://img.shields.io/badge/Vercel-Deployment-black?style=for-the-badge&logo=vercel)](https://ezpost.vercel.app)
 
 EZPost is a comprehensive social media management platform that leverages artificial intelligence to help small and medium-sized businesses automate and optimize their social media presence across multiple platforms.
 
