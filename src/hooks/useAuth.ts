@@ -9,11 +9,11 @@ export function useAuth() {
   const router = useRouter();
 
   const signIn = async (email: string, password: string) => {
-    router.push('/sign-in');
+    router.push('/login');
   };
 
   const signUp = async (email: string, password: string) => {
-    router.push('/sign-up');
+    router.push('/signup');
   };
 
   const signOut = async () => {

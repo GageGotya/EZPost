@@ -2,10 +2,11 @@ import './globals.css';
 import { Inter } from 'next/font/google';
 import { ClerkProvider } from '@clerk/nextjs';
 import { Toaster } from 'react-hot-toast';
+import { Metadata } from 'next';
 
 const inter = Inter({ subsets: ['latin'] });
 
-export const metadata = {
+export const metadata: Metadata = {
   title: 'EZPost - AI-Powered Social Media Management',
   description: 'Automate and optimize your social media presence with AI-powered content creation and scheduling.',
 };
@@ -16,7 +17,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <ClerkProvider>
+    <ClerkProvider publishableKey={process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY}>
       <html lang="en">
         <body className={inter.className}>
           {children}
