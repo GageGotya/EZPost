@@ -3,9 +3,10 @@
 import { useAuth } from '@/hooks/useAuth';
 import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
-import DashboardNav from '@/components/dashboard/DashboardNav';
+import { DashboardLayout } from '@/components/layout/DashboardLayout';
+import { Toaster } from 'react-hot-toast';
 
-export default function DashboardLayout({
+export default function DashboardRootLayout({
   children,
 }: {
   children: React.ReactNode;
@@ -22,7 +23,7 @@ export default function DashboardLayout({
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-primary"></div>
+        <div className="animate-spin rounded-full h-32 w-32 border-t-2 border-b-2 border-blue-500"></div>
       </div>
     );
   }
@@ -32,13 +33,11 @@ export default function DashboardLayout({
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <DashboardNav />
-      <main className="py-10">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          {children}
-        </div>
-      </main>
-    </div>
+    <>
+      <DashboardLayout>
+        {children}
+      </DashboardLayout>
+      <Toaster position="top-right" />
+    </>
   );
 } 
