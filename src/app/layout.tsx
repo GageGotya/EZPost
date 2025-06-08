@@ -3,6 +3,7 @@ import { Inter } from 'next/font/google';
 import { ClerkProvider } from '@clerk/nextjs';
 import { Toaster } from 'react-hot-toast';
 import { Metadata } from 'next';
+import { SpeedInsights } from '@vercel/speed-insights/next';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -22,6 +23,7 @@ export default function RootLayout({
         <body className={inter.className}>
           {children}
           <Toaster position="bottom-right" />
+          <SpeedInsights />
         </body>
       </html>
     </ClerkProvider>
