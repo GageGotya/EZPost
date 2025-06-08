@@ -1,3 +1,5 @@
+'use client';
+
 import { ReactNode } from 'react';
 import { Navigation } from './Navigation';
 import { Toaster } from 'react-hot-toast';
