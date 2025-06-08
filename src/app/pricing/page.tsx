@@ -1,3 +1,5 @@
+'use client';
+
 import { Layout } from '@/components/layout/Layout';
 import { PRICING_TIERS } from '@/lib/pricing';
 import { CheckIcon } from '@heroicons/react/24/outline';
