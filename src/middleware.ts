@@ -13,6 +13,9 @@ export default authMiddleware({
     "/privacy",
     "/terms",
     "/docs",
+    "/sign-in(.*)",
+    "/sign-up(.*)",
+    "/sso-callback(.*)",
   ],
   ignoredRoutes: [
     "/api/webhooks(.*)",
