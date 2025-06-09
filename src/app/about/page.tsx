@@ -13,7 +13,7 @@ export default function AboutPage() {
               Our Mission
             </h2>
             <p className="mt-4 text-lg text-gray-500">
-              Empowering businesses to thrive in the digital age with AI-powered social media management.
+              At EZPost, we're revolutionizing how businesses approach social media management. Our mission is to democratize access to professional-grade social media tools by combining cutting-edge AI technology with intuitive design. We believe every business deserves the opportunity to thrive in the digital space, regardless of their size or resources.
             </p>
           </div>
 
@@ -23,12 +23,12 @@ export default function AboutPage() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
               <div>
                 <p className="text-gray-500">
-                  EZPost was founded with a simple yet powerful vision: to make professional social media management accessible to businesses of all sizes. We recognized that maintaining an effective social media presence was becoming increasingly complex and time-consuming.
+                  Born from the challenges faced by modern businesses in managing their social media presence, EZPost was created to make professional social media management accessible and efficient. We understand that maintaining an engaging social media presence is crucial for business success, yet it can be overwhelming and time-consuming.
                 </p>
               </div>
               <div>
                 <p className="text-gray-500">
-                  By leveraging cutting-edge AI technology, we've created a platform that not only saves time but also enhances the quality and effectiveness of social media content. Our AI understands your brand voice and automatically generates engaging content optimized for each platform.
+                  By harnessing the power of advanced AI technology, we've developed a platform that not only saves valuable time but also enhances the quality and effectiveness of social media content. Our AI learns your unique brand voice and automatically generates engaging, platform-optimized content that resonates with your audience.
                 </p>
               </div>
             </div>
@@ -39,21 +39,21 @@ export default function AboutPage() {
             <h3 className="text-2xl font-bold text-gray-900 mb-8">Our Values</h3>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
               <div className="bg-gray-50 p-6 rounded-lg">
-                <h4 className="text-xl font-semibold text-gray-900 mb-4">Innovation</h4>
+                <h4 className="text-xl font-semibold text-gray-900 mb-4">Innovation First</h4>
                 <p className="text-gray-500">
-                  We continuously push the boundaries of what's possible with AI and social media management.
+                  We continuously push the boundaries of AI technology to deliver cutting-edge solutions that transform social media management.
                 </p>
               </div>
               <div className="bg-gray-50 p-6 rounded-lg">
-                <h4 className="text-xl font-semibold text-gray-900 mb-4">Simplicity</h4>
+                <h4 className="text-xl font-semibold text-gray-900 mb-4">User-Centric Design</h4>
                 <p className="text-gray-500">
-                  We believe powerful tools should be easy to use, making social media management effortless.
+                  We believe powerful tools should be intuitive and accessible, making professional social media management effortless for everyone.
                 </p>
               </div>
               <div className="bg-gray-50 p-6 rounded-lg">
                 <h4 className="text-xl font-semibold text-gray-900 mb-4">Customer Success</h4>
                 <p className="text-gray-500">
-                  Your success is our success. We're committed to helping you achieve your social media goals.
+                  Your growth is our priority. We're committed to providing the tools and support you need to achieve exceptional results on social media.
                 </p>
               </div>
             </div>
@@ -67,16 +67,19 @@ export default function AboutPage() {
                 <div className="h-40 w-40 rounded-full bg-gray-200 mx-auto mb-4"></div>
                 <h4 className="text-lg font-semibold text-gray-900">Gage Ayala</h4>
                 <p className="text-gray-500">Founder & CEO</p>
+                <p className="mt-2 text-sm text-gray-500">Visionary leader focused on making professional social media management accessible to all businesses.</p>
               </div>
               <div className="text-center">
                 <div className="h-40 w-40 rounded-full bg-gray-200 mx-auto mb-4"></div>
-                <h4 className="text-lg font-semibold text-gray-900">Sarah Chen</h4>
-                <p className="text-gray-500">Head of AI</p>
+                <h4 className="text-lg font-semibold text-gray-900">Emily Funk</h4>
+                <p className="text-gray-500">Lead Design</p>
+                <p className="mt-2 text-sm text-gray-500">Creative force behind our intuitive user interface and seamless user experience.</p>
               </div>
               <div className="text-center">
                 <div className="h-40 w-40 rounded-full bg-gray-200 mx-auto mb-4"></div>
-                <h4 className="text-lg font-semibold text-gray-900">Marcus Johnson</h4>
-                <p className="text-gray-500">Head of Product</p>
+                <h4 className="text-lg font-semibold text-gray-900">Alex Mitchell</h4>
+                <p className="text-gray-500">Software Engineer</p>
+                <p className="mt-2 text-sm text-gray-500">Technical expert driving our AI innovation and platform development.</p>
               </div>
             </div>
           </div>
