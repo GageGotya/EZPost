@@ -11,16 +11,15 @@ export default authMiddleware({
     "/api/webhooks(.*)",
     "/about",
     "/pricing",
-    "/contact",
-    "/blog(.*)",
+    "/features",
+    "/privacy",
+    "/terms",
+    "/docs",
   ],
   ignoredRoutes: [
     "/api/webhooks(.*)",
-    "/_next/static/(.*)",
-    "/favicon.ico",
   ],
   debug: process.env.NODE_ENV === 'development',
-  domain: process.env.NEXT_PUBLIC_CLERK_DOMAIN || "ezpost.net",
 });
 
 export const config = {
