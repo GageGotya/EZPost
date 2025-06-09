@@ -3,24 +3,27 @@
 import { Layout } from '@/components/layout/Layout';
 import { useUser } from '@clerk/nextjs';
 import { useRouter } from 'next/navigation';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 
 export default function OnboardingPage() {
   const { user, isLoaded } = useUser();
   const router = useRouter();
+  const [isRedirecting, setIsRedirecting] = useState(false);
 
   useEffect(() => {
-    if (isLoaded && !user) {
-      router.push('/');
-      return;
-    }
+    if (!isLoaded || isRedirecting) return;
 
-    // You can add any onboarding steps here
-    // For now, we'll just redirect to dashboard
-    if (isLoaded && user) {
-      router.push('/dashboard');
-    }
-  }, [isLoaded, user, router]);
+    const handleRedirect = async () => {
+      setIsRedirecting(true);
+      if (!user) {
+        router.push('/');
+      } else {
+        router.push('/dashboard');
+      }
+    };
+
+    handleRedirect();
+  }, [isLoaded, user, router, isRedirecting]);
 
   return (
     <Layout>
