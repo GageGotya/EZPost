@@ -13,7 +13,7 @@ export default function AboutPage() {
               Our Mission
             </h2>
             <p className="mt-4 text-lg text-gray-500">
-              At EZPost, we're revolutionizing how businesses approach social media management. Our mission is to democratize access to professional-grade social media tools by combining cutting-edge AI technology with intuitive design. We believe every business deserves the opportunity to thrive in the digital space, regardless of their size or resources.
+              At EZPost, we're revolutionizing how businesses approach social media management. Our mission is to make professional-grade social media tools accessible and powerful through cutting-edge AI technology and intuitive design. We believe every business should have the tools and capabilities to excel in the digital space, regardless of their size or resources.
             </p>
           </div>
 

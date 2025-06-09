@@ -9,8 +9,8 @@ import {
   UserGroupIcon,
   BoltIcon,
   WrenchScrewdriverIcon,
-  StarIcon,
 } from '@heroicons/react/24/outline';
+import { StarIcon } from '@heroicons/react/24/solid';
 
 const features = [
   {
