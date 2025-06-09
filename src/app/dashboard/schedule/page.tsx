@@ -1,6 +1,5 @@
 'use client';
 
-import { DashboardLayout } from '@/components/layout/DashboardLayout';
 import { Button } from '@/components/ui/Button';
 import { useState } from 'react';
 import { Platform } from '@/lib/types';
@@ -91,7 +90,7 @@ export default function Schedule() {
   };
 
   return (
-    <DashboardLayout>
+    <>
       <div className="py-6">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 md:px-8">
           <h1 className="text-2xl font-semibold text-gray-900">Content Schedule</h1>
@@ -226,6 +225,6 @@ export default function Schedule() {
           </div>
         </div>
       </div>
-    </DashboardLayout>
+    </>
   );
 } 
