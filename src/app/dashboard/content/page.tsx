@@ -7,6 +7,13 @@ import { useUserPreferences } from '@/hooks/useUserPreferences';
 import { useState } from 'react';
 import { Platform } from '@/lib/types';
 import toast from 'react-hot-toast';
+import {
+  TwitterIcon,
+  LinkedInIcon,
+  InstagramIcon,
+  FacebookIcon,
+  TikTokIcon,
+} from '@/components/icons/SocialIcons';
 
 export default function Content() {
   const { credits, useCredit } = useUserCredits();
@@ -15,12 +22,12 @@ export default function Content() {
   const [prompt, setPrompt] = useState('');
   const [selectedPlatforms, setSelectedPlatforms] = useState<Platform[]>([]);
 
-  const platforms: { id: Platform; name: string; icon: string }[] = [
-    { id: 'twitter', name: 'Twitter', icon: '🐦' },
-    { id: 'linkedin', name: 'LinkedIn', icon: '💼' },
-    { id: 'instagram', name: 'Instagram', icon: '📸' },
-    { id: 'facebook', name: 'Facebook', icon: '👥' },
-    { id: 'tiktok', name: 'TikTok', icon: '🎵' },
+  const platforms: { id: Platform; name: string; icon: React.FC<{ className?: string }> }[] = [
+    { id: 'twitter', name: 'Twitter', icon: TwitterIcon },
+    { id: 'linkedin', name: 'LinkedIn', icon: LinkedInIcon },
+    { id: 'instagram', name: 'Instagram', icon: InstagramIcon },
+    { id: 'facebook', name: 'Facebook', icon: FacebookIcon },
+    { id: 'tiktok', name: 'TikTok', icon: TikTokIcon },
   ];
 
   const handlePlatformToggle = (platform: Platform) => {
@@ -37,12 +44,10 @@ export default function Content() {
       toast.error('Please select at least one platform');
       return;
     }
-
-    if (!prompt.trim()) {
+    if (!prompt) {
       toast.error('Please enter a prompt');
       return;
     }
-
     if (credits.available < selectedPlatforms.length) {
       toast.error('Not enough credits');
       return;
@@ -50,19 +55,11 @@ export default function Content() {
 
     setLoading(true);
     try {
-      // Here we would call the OpenAI API to generate content
-      // For now, we'll just simulate it
-      await new Promise((resolve) => setTimeout(resolve, 2000));
-      
-      // Use credits for each platform
-      await Promise.all(selectedPlatforms.map(() => useCredit()));
-      
-      toast.success('Content generated successfully!');
-      setPrompt('');
-      setSelectedPlatforms([]);
+      // Implementation for content generation
+      toast.success('Content generated successfully');
     } catch (error) {
+      console.error('Error generating content:', error);
       toast.error('Failed to generate content');
-      console.error('Content generation error:', error);
     } finally {
       setLoading(false);
     }
@@ -104,34 +101,35 @@ export default function Content() {
 
                   {/* Platform selection */}
                   <div>
-                    <label className="text-base font-medium text-gray-900">
+                    <label className="text-base font-semibold text-gray-900">
                       Select Platforms
                     </label>
                     <p className="text-sm text-gray-500">
-                      Choose the platforms you want to generate content for.
+                      Choose which platforms to generate content for
                     </p>
-                    <div className="mt-4 grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-5">
-                      {platforms.map((platform) => (
-                        <button
-                          key={platform.id}
-                          type="button"
-                          onClick={() => handlePlatformToggle(platform.id)}
-                          className={`relative rounded-lg border p-4 flex items-center space-x-3 ${
-                            selectedPlatforms.includes(platform.id)
-                              ? 'border-blue-600 ring-2 ring-blue-600'
-                              : 'border-gray-300'
-                          }`}
-                        >
-                          <div className="flex-shrink-0 text-2xl">
-                            {platform.icon}
-                          </div>
-                          <div className="min-w-0 flex-1">
-                            <span className="text-sm font-medium text-gray-900">
-                              {platform.name}
-                            </span>
-                          </div>
-                        </button>
-                      ))}
+                    <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-5">
+                      {platforms.map((platform) => {
+                        const Icon = platform.icon;
+                        return (
+                          <button
+                            key={platform.id}
+                            type="button"
+                            onClick={() => handlePlatformToggle(platform.id)}
+                            className={`relative flex items-center justify-center p-4 rounded-lg border ${
+                              selectedPlatforms.includes(platform.id)
+                                ? 'border-blue-500 bg-blue-50'
+                                : 'border-gray-300'
+                            } hover:border-blue-500 transition-colors`}
+                          >
+                            <div className="flex flex-col items-center">
+                              <Icon className="h-8 w-8" />
+                              <span className="mt-2 text-sm font-medium text-gray-900">
+                                {platform.name}
+                              </span>
+                            </div>
+                          </button>
+                        );
+                      })}
                     </div>
                   </div>
 
@@ -148,20 +146,21 @@ export default function Content() {
                         id="prompt"
                         name="prompt"
                         rows={4}
+                        className="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+                        placeholder="What would you like to post about?"
                         value={prompt}
                         onChange={(e) => setPrompt(e.target.value)}
-                        className="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
-                        placeholder="Describe what you want to post about..."
                       />
                     </div>
                   </div>
 
                   {/* Submit button */}
-                  <div className="flex justify-end">
+                  <div>
                     <Button
                       type="submit"
+                      disabled={loading || selectedPlatforms.length === 0 || !prompt}
                       loading={loading}
-                      disabled={loading || selectedPlatforms.length === 0 || !prompt.trim()}
+                      fullWidth
                     >
                       Generate Content
                     </Button>

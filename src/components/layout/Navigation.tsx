@@ -10,7 +10,7 @@ import { Button } from '../ui/Button';
 
 const navigation = [
   { name: 'Home', href: '/' },
-  { name: 'Features', href: '/features' },
+  { name: 'Our Mission', href: '/about' },
   { name: 'Pricing', href: '/pricing' },
 ];
 

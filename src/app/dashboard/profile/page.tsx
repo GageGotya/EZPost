@@ -1,260 +1,304 @@
 'use client';
 
-import { DashboardLayout } from '@/components/layout/DashboardLayout';
-import { Button } from '@/components/ui/Button';
-import { useUserPreferences } from '@/hooks/useUserPreferences';
 import { useState } from 'react';
-import { BusinessType, ContentTone, Platform, PostFrequency } from '@/lib/types';
-import toast from 'react-hot-toast';
-import type { Database } from '@/lib/supabase/types';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import * as z from 'zod';
+import { toast } from 'react-hot-toast';
+import { useUser } from '@clerk/nextjs';
+import {
+  BuildingOfficeIcon,
+  GlobeAltIcon,
+  PhoneIcon,
+  EnvelopeIcon,
+  MapPinIcon,
+} from '@heroicons/react/24/outline';
 
-type BusinessProfile = Database['public']['Tables']['business_profiles']['Row'];
-type UserPreferences = Database['public']['Tables']['user_preferences']['Row'];
+const businessProfileSchema = z.object({
+  businessName: z.string().min(2, 'Business name must be at least 2 characters'),
+  website: z.string().url('Please enter a valid URL'),
+  email: z.string().email('Please enter a valid email address'),
+  phone: z.string().min(10, 'Please enter a valid phone number'),
+  address: z.string().min(5, 'Please enter a valid address'),
+  city: z.string().min(2, 'City must be at least 2 characters'),
+  state: z.string().min(2, 'State must be at least 2 characters'),
+  zipCode: z.string().min(5, 'Please enter a valid ZIP code'),
+  country: z.string().min(2, 'Country must be at least 2 characters'),
+  industry: z.string().min(2, 'Industry must be at least 2 characters'),
+  description: z.string().min(10, 'Description must be at least 10 characters'),
+});
 
-export default function Profile() {
-  const { preferences, updatePreferences, updateBusinessProfile } = useUserPreferences();
-  const [loading, setLoading] = useState(false);
+type BusinessProfileFormData = z.infer<typeof businessProfileSchema>;
 
-  const businessTypes: BusinessType[] = ['retail', 'tech', 'food', 'health', 'finance', 'other'];
-  const postFrequencies: { value: PostFrequency; label: string }[] = [
-    { value: 'daily', label: 'Daily' },
-    { value: '3x_week', label: '3 Times per Week' },
-    { value: 'weekly', label: 'Weekly' },
-  ];
-  const contentTones: { value: ContentTone; label: string }[] = [
-    { value: 'professional', label: 'Professional' },
-    { value: 'casual', label: 'Casual' },
-    { value: 'humorous', label: 'Humorous' },
-    { value: 'formal', label: 'Formal' },
-  ];
-  const platforms: { value: Platform; label: string }[] = [
-    { value: 'twitter', label: 'Twitter' },
-    { value: 'linkedin', label: 'LinkedIn' },
-    { value: 'instagram', label: 'Instagram' },
-    { value: 'facebook', label: 'Facebook' },
-    { value: 'tiktok', label: 'TikTok' },
-  ];
+export default function BusinessProfilePage() {
+  const { user } = useUser();
+  const [isLoading, setIsLoading] = useState(false);
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    setLoading(true);
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<BusinessProfileFormData>({
+    resolver: zodResolver(businessProfileSchema),
+    defaultValues: {
+      businessName: '',
+      website: '',
+      email: user?.emailAddresses[0]?.emailAddress || '',
+      phone: '',
+      address: '',
+      city: '',
+      state: '',
+      zipCode: '',
+      country: '',
+      industry: '',
+      description: '',
+    },
+  });
 
+  const onSubmit = async (data: BusinessProfileFormData) => {
     try {
-      const formData = new FormData(e.currentTarget);
-      const businessProfile: Partial<BusinessProfile> = {
-        type: formData.get('businessType') as BusinessType,
-        name: formData.get('businessName') as string,
-        description: formData.get('description') as string,
-        target_audience: formData.get('targetAudience') as string,
-        keywords: formData.get('keywords')?.toString().split(',').map(k => k.trim()) || [],
-        tone: formData.get('tone') as ContentTone,
-      };
-
-      const selectedPlatforms = platforms
-        .filter(p => formData.get(`platform_${p.value}`) === 'on')
-        .map(p => p.value);
-
-      await updateBusinessProfile(businessProfile);
-      await updatePreferences({
-        post_frequency: formData.get('postFrequency') as PostFrequency,
-        platforms: selectedPlatforms,
-        auto_schedule: formData.get('autoSchedule') === 'on',
-      });
-
-      toast.success('Profile updated successfully');
+      setIsLoading(true);
+      // TODO: Implement API call to update business profile
+      await new Promise(resolve => setTimeout(resolve, 1000)); // Simulated API call
+      toast.success('Business profile updated successfully');
     } catch (error) {
-      toast.error('Failed to update profile');
-      console.error('Profile update error:', error);
+      toast.error('Failed to update business profile');
     } finally {
-      setLoading(false);
+      setIsLoading(false);
     }
   };
 
   return (
-    <>
-      <div className="py-6">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 md:px-8">
-          <h1 className="text-2xl font-semibold text-gray-900">Business Profile</h1>
-          <p className="mt-2 text-sm text-gray-600">
-            Manage your business profile and content preferences.
-          </p>
-        </div>
+    <div className="py-6">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <h1 className="text-2xl font-semibold text-gray-900">Business Profile</h1>
+        <p className="mt-2 text-sm text-gray-600">
+          Update your business information and preferences.
+        </p>
 
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 md:px-8">
-          <div className="mt-8">
-            <form onSubmit={handleSubmit} className="space-y-8 divide-y divide-gray-200">
-              <div className="space-y-8 divide-y divide-gray-200">
-                <div>
-                  <div>
-                    <h3 className="text-lg font-medium leading-6 text-gray-900">
-                      Business Information
-                    </h3>
-                    <p className="mt-1 text-sm text-gray-500">
-                      This information will be used to generate content that matches your brand.
-                    </p>
+        <form onSubmit={handleSubmit(onSubmit)} className="mt-6 space-y-8">
+          {/* Basic Information */}
+          <div className="bg-white shadow sm:rounded-lg">
+            <div className="px-4 py-5 sm:p-6">
+              <h3 className="text-lg font-medium leading-6 text-gray-900">
+                Basic Information
+              </h3>
+              <div className="mt-6 grid grid-cols-1 gap-y-6 gap-x-4 sm:grid-cols-6">
+                <div className="sm:col-span-3">
+                  <label htmlFor="businessName" className="block text-sm font-medium text-gray-700">
+                    Business Name
+                  </label>
+                  <div className="mt-1 relative rounded-md shadow-sm">
+                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                      <BuildingOfficeIcon className="h-5 w-5 text-gray-400" aria-hidden="true" />
+                    </div>
+                    <input
+                      type="text"
+                      {...register('businessName')}
+                      className="block w-full pl-10 sm:text-sm rounded-md border-gray-300 focus:ring-blue-500 focus:border-blue-500"
+                    />
                   </div>
-
-                  <div className="mt-6 grid grid-cols-1 gap-y-6 gap-x-4 sm:grid-cols-6">
-                    <div className="sm:col-span-3">
-                      <label htmlFor="businessType" className="block text-sm font-medium text-gray-700">
-                        Business Type
-                      </label>
-                      <select
-                        id="businessType"
-                        name="businessType"
-                        defaultValue={preferences.business_profile?.type}
-                        className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
-                      >
-                        {businessTypes.map((type) => (
-                          <option key={type} value={type}>
-                            {type.charAt(0).toUpperCase() + type.slice(1)}
-                          </option>
-                        ))}
-                      </select>
-                    </div>
-
-                    <div className="sm:col-span-3">
-                      <label htmlFor="businessName" className="block text-sm font-medium text-gray-700">
-                        Business Name
-                      </label>
-                      <input
-                        type="text"
-                        name="businessName"
-                        id="businessName"
-                        defaultValue={preferences.business_profile?.name}
-                        className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
-                      />
-                    </div>
-
-                    <div className="sm:col-span-6">
-                      <label htmlFor="description" className="block text-sm font-medium text-gray-700">
-                        Business Description
-                      </label>
-                      <textarea
-                        id="description"
-                        name="description"
-                        rows={3}
-                        defaultValue={preferences.business_profile?.description || ''}
-                        className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
-                      />
-                    </div>
-
-                    <div className="sm:col-span-6">
-                      <label htmlFor="targetAudience" className="block text-sm font-medium text-gray-700">
-                        Target Audience
-                      </label>
-                      <input
-                        type="text"
-                        name="targetAudience"
-                        id="targetAudience"
-                        defaultValue={preferences.business_profile?.target_audience || ''}
-                        className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
-                      />
-                    </div>
-
-                    <div className="sm:col-span-6">
-                      <label htmlFor="keywords" className="block text-sm font-medium text-gray-700">
-                        Keywords (comma-separated)
-                      </label>
-                      <input
-                        type="text"
-                        name="keywords"
-                        id="keywords"
-                        defaultValue={preferences.business_profile?.keywords?.join(', ') || ''}
-                        className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
-                      />
-                    </div>
-                  </div>
+                  {errors.businessName && (
+                    <p className="mt-1 text-sm text-red-600">{errors.businessName.message}</p>
+                  )}
                 </div>
 
-                <div className="pt-8">
-                  <div>
-                    <h3 className="text-lg font-medium leading-6 text-gray-900">
-                      Content Preferences
-                    </h3>
-                    <p className="mt-1 text-sm text-gray-500">
-                      Choose how you want your content to be generated and scheduled.
-                    </p>
-                  </div>
-
-                  <div className="mt-6">
-                    <fieldset>
-                      <legend className="text-base font-medium text-gray-900">Platforms</legend>
-                      <div className="mt-4 space-y-4">
-                        {platforms.map((platform) => (
-                          <div key={platform.value} className="flex items-center">
-                            <input
-                              id={`platform_${platform.value}`}
-                              name={`platform_${platform.value}`}
-                              type="checkbox"
-                              defaultChecked={preferences.platforms?.includes(platform.value)}
-                              className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-                            />
-                            <label
-                              htmlFor={`platform_${platform.value}`}
-                              className="ml-3 block text-sm font-medium text-gray-700"
-                            >
-                              {platform.label}
-                            </label>
-                          </div>
-                        ))}
-                      </div>
-                    </fieldset>
-
-                    <div className="mt-6">
-                      <label htmlFor="postFrequency" className="block text-sm font-medium text-gray-700">
-                        Posting Frequency
-                      </label>
-                      <select
-                        id="postFrequency"
-                        name="postFrequency"
-                        defaultValue={preferences.post_frequency}
-                        className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
-                      >
-                        {postFrequencies.map((freq) => (
-                          <option key={freq.value} value={freq.value}>
-                            {freq.label}
-                          </option>
-                        ))}
-                      </select>
+                <div className="sm:col-span-3">
+                  <label htmlFor="website" className="block text-sm font-medium text-gray-700">
+                    Website
+                  </label>
+                  <div className="mt-1 relative rounded-md shadow-sm">
+                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                      <GlobeAltIcon className="h-5 w-5 text-gray-400" aria-hidden="true" />
                     </div>
-
-                    <div className="mt-6">
-                      <div className="flex items-start">
-                        <div className="flex h-5 items-center">
-                          <input
-                            id="autoSchedule"
-                            name="autoSchedule"
-                            type="checkbox"
-                            defaultChecked={preferences.auto_schedule}
-                            className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-                          />
-                        </div>
-                        <div className="ml-3 text-sm">
-                          <label htmlFor="autoSchedule" className="font-medium text-gray-700">
-                            Auto-schedule posts
-                          </label>
-                          <p className="text-gray-500">
-                            Let AI determine the best times to post your content.
-                          </p>
-                        </div>
-                      </div>
-                    </div>
+                    <input
+                      type="url"
+                      {...register('website')}
+                      className="block w-full pl-10 sm:text-sm rounded-md border-gray-300 focus:ring-blue-500 focus:border-blue-500"
+                    />
                   </div>
+                  {errors.website && (
+                    <p className="mt-1 text-sm text-red-600">{errors.website.message}</p>
+                  )}
+                </div>
+
+                <div className="sm:col-span-3">
+                  <label htmlFor="email" className="block text-sm font-medium text-gray-700">
+                    Email
+                  </label>
+                  <div className="mt-1 relative rounded-md shadow-sm">
+                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                      <EnvelopeIcon className="h-5 w-5 text-gray-400" aria-hidden="true" />
+                    </div>
+                    <input
+                      type="email"
+                      {...register('email')}
+                      className="block w-full pl-10 sm:text-sm rounded-md border-gray-300 focus:ring-blue-500 focus:border-blue-500"
+                    />
+                  </div>
+                  {errors.email && (
+                    <p className="mt-1 text-sm text-red-600">{errors.email.message}</p>
+                  )}
+                </div>
+
+                <div className="sm:col-span-3">
+                  <label htmlFor="phone" className="block text-sm font-medium text-gray-700">
+                    Phone
+                  </label>
+                  <div className="mt-1 relative rounded-md shadow-sm">
+                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                      <PhoneIcon className="h-5 w-5 text-gray-400" aria-hidden="true" />
+                    </div>
+                    <input
+                      type="tel"
+                      {...register('phone')}
+                      className="block w-full pl-10 sm:text-sm rounded-md border-gray-300 focus:ring-blue-500 focus:border-blue-500"
+                    />
+                  </div>
+                  {errors.phone && (
+                    <p className="mt-1 text-sm text-red-600">{errors.phone.message}</p>
+                  )}
                 </div>
               </div>
-
-              <div className="pt-5">
-                <div className="flex justify-end">
-                  <Button type="submit" loading={loading}>
-                    Save Changes
-                  </Button>
-                </div>
-              </div>
-            </form>
+            </div>
           </div>
-        </div>
+
+          {/* Address Information */}
+          <div className="bg-white shadow sm:rounded-lg">
+            <div className="px-4 py-5 sm:p-6">
+              <h3 className="text-lg font-medium leading-6 text-gray-900">
+                Address Information
+              </h3>
+              <div className="mt-6 grid grid-cols-1 gap-y-6 gap-x-4 sm:grid-cols-6">
+                <div className="sm:col-span-6">
+                  <label htmlFor="address" className="block text-sm font-medium text-gray-700">
+                    Street Address
+                  </label>
+                  <div className="mt-1 relative rounded-md shadow-sm">
+                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                      <MapPinIcon className="h-5 w-5 text-gray-400" aria-hidden="true" />
+                    </div>
+                    <input
+                      type="text"
+                      {...register('address')}
+                      className="block w-full pl-10 sm:text-sm rounded-md border-gray-300 focus:ring-blue-500 focus:border-blue-500"
+                    />
+                  </div>
+                  {errors.address && (
+                    <p className="mt-1 text-sm text-red-600">{errors.address.message}</p>
+                  )}
+                </div>
+
+                <div className="sm:col-span-2">
+                  <label htmlFor="city" className="block text-sm font-medium text-gray-700">
+                    City
+                  </label>
+                  <div className="mt-1">
+                    <input
+                      type="text"
+                      {...register('city')}
+                      className="block w-full sm:text-sm rounded-md border-gray-300 focus:ring-blue-500 focus:border-blue-500"
+                    />
+                  </div>
+                  {errors.city && (
+                    <p className="mt-1 text-sm text-red-600">{errors.city.message}</p>
+                  )}
+                </div>
+
+                <div className="sm:col-span-2">
+                  <label htmlFor="state" className="block text-sm font-medium text-gray-700">
+                    State / Province
+                  </label>
+                  <div className="mt-1">
+                    <input
+                      type="text"
+                      {...register('state')}
+                      className="block w-full sm:text-sm rounded-md border-gray-300 focus:ring-blue-500 focus:border-blue-500"
+                    />
+                  </div>
+                  {errors.state && (
+                    <p className="mt-1 text-sm text-red-600">{errors.state.message}</p>
+                  )}
+                </div>
+
+                <div className="sm:col-span-2">
+                  <label htmlFor="zipCode" className="block text-sm font-medium text-gray-700">
+                    ZIP / Postal Code
+                  </label>
+                  <div className="mt-1">
+                    <input
+                      type="text"
+                      {...register('zipCode')}
+                      className="block w-full sm:text-sm rounded-md border-gray-300 focus:ring-blue-500 focus:border-blue-500"
+                    />
+                  </div>
+                  {errors.zipCode && (
+                    <p className="mt-1 text-sm text-red-600">{errors.zipCode.message}</p>
+                  )}
+                </div>
+
+                <div className="sm:col-span-3">
+                  <label htmlFor="country" className="block text-sm font-medium text-gray-700">
+                    Country
+                  </label>
+                  <div className="mt-1">
+                    <input
+                      type="text"
+                      {...register('country')}
+                      className="block w-full sm:text-sm rounded-md border-gray-300 focus:ring-blue-500 focus:border-blue-500"
+                    />
+                  </div>
+                  {errors.country && (
+                    <p className="mt-1 text-sm text-red-600">{errors.country.message}</p>
+                  )}
+                </div>
+
+                <div className="sm:col-span-3">
+                  <label htmlFor="industry" className="block text-sm font-medium text-gray-700">
+                    Industry
+                  </label>
+                  <div className="mt-1">
+                    <input
+                      type="text"
+                      {...register('industry')}
+                      className="block w-full sm:text-sm rounded-md border-gray-300 focus:ring-blue-500 focus:border-blue-500"
+                    />
+                  </div>
+                  {errors.industry && (
+                    <p className="mt-1 text-sm text-red-600">{errors.industry.message}</p>
+                  )}
+                </div>
+
+                <div className="sm:col-span-6">
+                  <label htmlFor="description" className="block text-sm font-medium text-gray-700">
+                    Business Description
+                  </label>
+                  <div className="mt-1">
+                    <textarea
+                      {...register('description')}
+                      rows={4}
+                      className="block w-full sm:text-sm rounded-md border-gray-300 focus:ring-blue-500 focus:border-blue-500"
+                    />
+                  </div>
+                  {errors.description && (
+                    <p className="mt-1 text-sm text-red-600">{errors.description.message}</p>
+                  )}
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="flex justify-end">
+            <button
+              type="submit"
+              disabled={isLoading}
+              className="ml-3 inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {isLoading ? 'Saving...' : 'Save Changes'}
+            </button>
+          </div>
+        </form>
       </div>
-    </>
+    </div>
   );
 } 

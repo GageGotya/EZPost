@@ -3,6 +3,7 @@
 import { ReactNode } from 'react';
 import { Navigation } from './Navigation';
 import { Toaster } from 'react-hot-toast';
+import { TwitterIcon, LinkedInIcon, InstagramIcon, FacebookIcon, TikTokIcon } from '../icons/SocialIcons';
 
 interface LayoutProps {
   children: ReactNode;
@@ -24,8 +25,8 @@ export function Layout({ children }: LayoutProps) {
                 </h3>
                 <ul className="mt-4 space-y-4">
                   <li>
-                    <a href="/features" className="text-base text-gray-500 hover:text-gray-900">
-                      Features
+                    <a href="/about" className="text-base text-gray-500 hover:text-gray-900">
+                      Our Mission
                     </a>
                   </li>
                   <li>
@@ -45,6 +46,16 @@ export function Layout({ children }: LayoutProps) {
                       Documentation
                     </a>
                   </li>
+                  <li>
+                    <a href="/docs/troubleshooting" className="text-base text-gray-500 hover:text-gray-900">
+                      Troubleshooting Guide
+                    </a>
+                  </li>
+                  <li>
+                    <a href="/docs/api" className="text-base text-gray-500 hover:text-gray-900">
+                      API Reference
+                    </a>
+                  </li>
                 </ul>
               </div>
               <div>
@@ -57,6 +68,11 @@ export function Layout({ children }: LayoutProps) {
                       About
                     </a>
                   </li>
+                  <li>
+                    <a href="/contact" className="text-base text-gray-500 hover:text-gray-900">
+                      Contact
+                    </a>
+                  </li>
                 </ul>
               </div>
               <div>
@@ -66,21 +82,45 @@ export function Layout({ children }: LayoutProps) {
                 <ul className="mt-4 space-y-4">
                   <li>
                     <a href="/privacy" className="text-base text-gray-500 hover:text-gray-900">
-                      Privacy
+                      Privacy Policy
                     </a>
                   </li>
                   <li>
                     <a href="/terms" className="text-base text-gray-500 hover:text-gray-900">
-                      Terms
+                      Terms of Service
                     </a>
                   </li>
                 </ul>
               </div>
             </div>
-            <div className="mt-8 border-t border-gray-200 pt-8 text-center">
-              <p className="text-base text-gray-400">
-                &copy; 2024 EZPost. All rights reserved.
-              </p>
+            <div className="mt-8 border-t border-gray-200 pt-8">
+              <div className="flex justify-between items-center">
+                <p className="text-base text-gray-400">
+                  &copy; 2024 EZPost. All rights reserved.
+                </p>
+                <div className="flex space-x-6">
+                  <a href="https://twitter.com" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-gray-500">
+                    <span className="sr-only">Twitter</span>
+                    <TwitterIcon />
+                  </a>
+                  <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-gray-500">
+                    <span className="sr-only">LinkedIn</span>
+                    <LinkedInIcon />
+                  </a>
+                  <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-gray-500">
+                    <span className="sr-only">Instagram</span>
+                    <InstagramIcon />
+                  </a>
+                  <a href="https://facebook.com" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-gray-500">
+                    <span className="sr-only">Facebook</span>
+                    <FacebookIcon />
+                  </a>
+                  <a href="https://tiktok.com" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-gray-500">
+                    <span className="sr-only">TikTok</span>
+                    <TikTokIcon />
+                  </a>
+                </div>
+              </div>
             </div>
           </div>
         </div>
