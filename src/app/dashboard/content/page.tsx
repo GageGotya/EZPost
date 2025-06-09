@@ -147,7 +147,7 @@ export default function Content() {
                         name="prompt"
                         rows={4}
                         className="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
-                        placeholder="What would you like to post about?"
+                        placeholder="Enter your topic or idea, and we'll create engaging social media content for you!"
                         value={prompt}
                         onChange={(e) => setPrompt(e.target.value)}
                       />
