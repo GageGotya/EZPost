@@ -18,7 +18,13 @@ export default authMiddleware({
   ],
   ignoredRoutes: [
     "/api/webhooks(.*)",
+    "/_next/static/(.*)",
+    "/favicon.ico",
   ],
+  afterAuth(auth, req, evt) {
+    // Handle auth state
+    console.log('Auth state:', auth.userId ? 'Authenticated' : 'Unauthenticated');
+  },
   debug: process.env.NODE_ENV === 'development',
 });
 

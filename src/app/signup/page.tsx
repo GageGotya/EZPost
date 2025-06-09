@@ -8,6 +8,11 @@ import toast from 'react-hot-toast';
 export default function SignUpPage() {
   const router = useRouter();
 
+  const handleSignUpComplete = () => {
+    console.log('Sign up completed');
+    toast.success('Account created! Redirecting to dashboard...');
+  };
+
   return (
     <Layout>
       <div className="min-h-[calc(100vh-4rem)] flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8 bg-gray-50">
