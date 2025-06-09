@@ -8,6 +8,7 @@ export default authMiddleware({
     "/",
     "/login",
     "/signup",
+    "/signup/verify-email-address",
     "/api/webhooks(.*)",
     "/about",
     "/pricing",
